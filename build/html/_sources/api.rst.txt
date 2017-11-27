@@ -1,0 +1,1273 @@
+.. MySQL Backup,Clone and Restore workflow through API documentation master file, created by
+   sphinx-quickstart on Tue Aug 08 14:15:40 2017.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+
+
+Authentication
+================================================================
+
+All Snapcenter API's require an authentication token to be executed successfully. An authentication token can be generated via API.
+
+
+	* API Request URL ::
+	
+		https://<<SnapCenter-Server-IP>>/api/3.0/auth/login?TokenNeverExpires=true
+
+	* Mandatory API Parameters:-
+
+		1) TokenNeverExpires = True
+		2) User Operation Context ::
+			
+			{
+			  "UserOperationContext": {
+				"User": {
+				  "Name": "<<Domain>>\\<<Username>>",
+				  "Passphrase": "<<SnapcenterPassword>>",
+				  "Rolename": "SnapCenterAdmin"
+				}
+			  }
+			}
+			
+	* Expected Response ::
+		
+		{
+		  "Job": {
+			"Name": null,
+			"Id": 0,
+			"StartTime": null,
+			"EndTime": null,
+			"IsCancellable": false,
+			"IsRestartable": false,
+			"IsCompleted": false,
+			"IsVisible": true,
+			"IsScheduled": false,
+			"PercentageCompleted": 0,
+			"Description": null,
+			"Status": 0,
+			"Owner": null,
+			"Error": null,
+			"Priority": 0,
+			"Tasks": [],
+			"ParentJobID": 0,
+			"EventId": 0,
+			"JobTypeId": null,
+			"ApisJobKey": null,
+			"ObjectId": 0,
+			"PluginCode": 0,
+			"PluginName": null
+		  },
+		  "User": {
+			"Token": "66PEpittWC/Y/46P49Nn2cimpgxj10HMqTc2kRkdjgDOLNawlgS1kHgjLQYXsuUjuybW0t9o7PbkpQH88ri6cDJkksLtf4x6GF9jtHU88rG3T1L1GBK0JM7nia+k1+f8Z7hP71gtFMotBJCawVIXeFwLpaEUdUtJMuyWj50Zmma0BNWgY9hbXQw+VpGt8wjnRXUVYLG7elBhThhLP/HHHw==",
+			"Name": "administrator",
+			"TokenHashed": null,
+			"Type": "",
+			"TokenTime": "2017-08-08T02:14:14.060481-07:00",
+			"Id": "1",
+			"FullName": "LAB\\administrator",
+			"Host": null,
+			"Author": null,
+			"UserName": "",
+			"Domain": "LAB",
+			"Passphrase": "",
+			"Description": "",
+			"Deleted": false,
+			"TokenNeverExpires": false,
+			"Auth": {
+			  "Id": 0,
+			  "RunAsName": null,
+			  "AuthMode": 0,
+			  "UserName": null,
+			  "Passpharse": null,
+			  "OwnerId": null,
+			  "HostName": null,
+			  "InstanceName": null,
+			  "CheckforAdministratorPrivilage": false,
+			  "TargetURL": null,
+			  "IsSudoEnabled": false
+			},
+			"IsAdmin": true,
+			"IsClone": false,
+			"TenantAdmin": null,
+			"CloneLevel": 0,
+			"IsNewUser": null,
+			"Hosts": null,
+			"UserGroupObjectType": 1,
+			"StorageName": null,
+			"RoleName": null,
+			"Key": 0,
+			"RoleId": 0,
+			"NsmObjectID": 0,
+			"GroupIds": [],
+			"GroupNames": null
+		  },
+		  "Result": {
+			"_message": "",
+			"_errorCode": 0,
+			"ErrorRecords": []
+		  },
+		  "TotalCount": 0,
+		  "DisplayCount": 0,
+		  "Context": null
+		}
+	
+	
+	Parse the token from the above response 
+	E.g: ::
+		6PEpittWC/Y/46P49Nn2cimpgxj10HMqTc2kRkdjgDOLNawlgS1kHgjLQYXsuUjuybW0t9o7PbkpQH88ri6cDJkksLtf4x6GF9jtHU88rG3T1L1GBK0JM7nia+k1+f8Z7hP71gtFMotBJCawVIXeFwLpaEUdUtJMuyWj50Zmma0BNWgY9hbXQw+VpGt8wjnRXUVYLG7elBhThhLP/HHHw==
+		
+		
+		
+	.. note::  The Authentication token is requires all future API calls.
+		
+
+	
+Get the Resource key for the MySQL DB Resource
+================================================================
+	
+	* API Request URL ::
+	
+		https://<<SC-Server-IP>>/api/3.0/hosts/<<Linux-HostName>>/plugins/MySQL/resources?ResourceType=Database&ResourceName=<<Resource-Name>>
+	
+		
+
+	* Mandatory API Parameters
+		1) Token    //
+		2) Name    //Hostname of the Linux Node
+		3) Instancetype //Database
+
+	* Expected API Response	::
+
+		{
+		  "Job": {
+			"Name": null,
+			"Id": 799,
+			"StartTime": null,
+			"EndTime": null,
+			"IsCancellable": false,
+			"IsRestartable": false,
+			"IsCompleted": false,
+			"IsVisible": true,
+			"IsScheduled": false,
+			"PercentageCompleted": 0,
+			"Description": null,
+			"Status": 0,
+			"Owner": null,
+			"Error": null,
+			"Priority": 0,
+			"Tasks": [],
+			"ParentJobID": 0,
+			"EventId": 0,
+			"JobTypeId": null,
+			"ApisJobKey": null,
+			"ObjectId": 0,
+			"PluginCode": 0,
+			"PluginName": null
+		  },
+		  "Resources": [
+			{
+			  "PluginCode": 7,
+			  "OperationResults": [
+				{
+				  "Target": {
+					"$type": "SMCoreContracts.SmSCPluginResource, SMCoreContracts",
+					"PluginName": "MySQL",
+					"Name": "apprendadb",
+					"Uid": "apprendadb",
+					"Type": "Database",
+					"ParentUid": "",
+					"Id": "app-linux2.lab.com\\MySQL\\apprendadb",
+					"SmAppFiles": null,
+					"Host": "app-linux2.lab.com",
+					"SmAppFileStorageGroups": [
+					  {
+						"Files": [],
+						"Name": "",
+						"StorageFootPrint": {
+						  "HostResource": null,
+						  "Name": "",
+						  "StorageSystemResources": [
+							{
+							  "$type": "SMCoreContracts.SDStorageSystemDirectory, SMCoreContracts",
+							  "StorageSystemId": {
+								"UserName": null,
+								"Aliases": [],
+								"Port": null,
+								"SmIPAddresses": [],
+								"TransportType": null,
+								"Name": "10.192.39.71",
+								"Mode": null,
+								"OntapiMajorVersion": null,
+								"OntapiMinorVersion": null,
+								"Version": null,
+								"StorageSystemOSType": null,
+								"Passphrase": null,
+								"Id": 0,
+								"Timeout": null,
+								"Uuid": null,
+								"OperationContext": null,
+								"PreferredIpAddress": null,
+								"Domain": null,
+								"VServerInterfaceList": [],
+								"OperationContextIsGroup": false,
+								"StorageKey": null,
+								"Site": null,
+								"GroupName": null,
+								"PlatformType": null,
+								"LicenseKeyType": 0
+							  },
+							  "ResourceType": 16,
+							  "Name": "10.192.39.71:/vol/mysql_vol",
+							  "Volume": {
+								"ResourceType": 15,
+								"Name": "mysql_vol",
+								"Vserver": "10.192.39.71",
+								"ResourceName": "10.192.39.71:/vol/mysql_vol",
+								"Type": "SDStorageVolume",
+								"FullPath": "10.192.39.71:/vol/mysql_vol",
+								"Ranges": null,
+								"Id": null,
+								"JunctionPath": "/mysql_vol",
+								"Host": null,
+								"JunctionParentName": null,
+								"UserName": "",
+								"SizeTotal": null,
+								"Passphrase": "",
+								"SizeUsed": null,
+								"Deleted": false,
+								"SnapMirrorSource": null,
+								"Auth": {
+								  "Id": 0,
+								  "RunAsName": null,
+								  "AuthMode": 0,
+								  "UserName": null,
+								  "Passpharse": null,
+								  "OwnerId": null,
+								  "HostName": null,
+								  "InstanceName": null,
+								  "CheckforAdministratorPrivilage": false,
+								  "TargetURL": null,
+								  "IsSudoEnabled": false
+								},
+								"SnapMirrorDest": null,
+								"IsClone": false,
+								"SnapVaultPrimary": null,
+								"CloneLevel": 0,
+								"SnapVaultSecondary": null,
+								"Hosts": null,
+								"FlexCloneEnabled": null,
+								"StorageName": null,
+								"IsFlexClone": null,
+								"Key": 0,
+								"VolumeSecurityStyle": null,
+								"NsmObjectID": 0,
+								"AggregateName": null,
+								"AggregateUuid": null,
+								"FlexCloneLevel": null,
+								"IsLeaf": null,
+								"VolumeState": null,
+								"AggregateAvailableSpace": null,
+								"ExportPolicy": null,
+								"VolumeUuid": null,
+								"OwningVserverName": null,
+								"VolumeType": null,
+								"IsProtected": false,
+								"StorageVmKey": null,
+								"VolumeKey": null,
+								"VolumeInstanceUuid": null,
+								"Size": null,
+								"IsRootVolume": null,
+								"IsSelectable": null,
+								"StorageKey": null,
+								"ProtectionStatus": null
+							  },
+							  "ResourceName": "10.192.39.71:/mysql_vol",
+							  "Type": "SDStorageDir",
+							  "LogicalPath": null,
+							  "Ranges": null,
+							  "Id": null,
+							  "PhysicalPath": null,
+							  "Host": null,
+							  "RelativePhysicalPath": null,
+							  "UserName": "",
+							  "JunctionPath": "/mysql_vol",
+							  "Passphrase": "",
+							  "NestJunctionPath": null,
+							  "Deleted": false,
+							  "NestVolumes": null,
+							  "Auth": {
+								"Id": 0,
+								"RunAsName": null,
+								"AuthMode": 0,
+								"UserName": null,
+								"Passpharse": null,
+								"OwnerId": null,
+								"HostName": null,
+								"InstanceName": null,
+								"CheckforAdministratorPrivilage": false,
+								"TargetURL": null,
+								"IsSudoEnabled": false
+							  },
+							  "NestJunctionParentVolume": null,
+							  "IsClone": false,
+							  "LeafVolume": null,
+							  "CloneLevel": 0,
+							  "Files": null,
+							  "Hosts": null,
+							  "StorageName": null,
+							  "Key": 0,
+							  "NsmObjectID": 0
+							}
+						  ],
+						  "Type": "",
+						  "VirtualResources": [],
+						  "Id": null,
+						  "Host": null,
+						  "UserName": "",
+						  "Passphrase": "",
+						  "Deleted": false,
+						  "Auth": {
+							"Id": 0,
+							"RunAsName": null,
+							"AuthMode": 0,
+							"UserName": null,
+							"Passpharse": null,
+							"OwnerId": null,
+							"HostName": null,
+							"InstanceName": null,
+							"CheckforAdministratorPrivilage": false,
+							"TargetURL": null,
+							"IsSudoEnabled": false
+						  },
+						  "IsClone": false,
+						  "CloneLevel": 0,
+						  "Hosts": null,
+						  "StorageName": null,
+						  "Key": 0,
+						  "NsmObjectID": 0
+						},
+						"Type": "",
+						"Id": null,
+						"Host": null,
+						"UserName": "",
+						"Passphrase": "",
+						"Deleted": false,
+						"Auth": {
+						  "Id": 0,
+						  "RunAsName": null,
+						  "AuthMode": 0,
+						  "UserName": null,
+						  "Passpharse": null,
+						  "OwnerId": null,
+						  "HostName": null,
+						  "InstanceName": null,
+						  "CheckforAdministratorPrivilage": false,
+						  "TargetURL": null,
+						  "IsSudoEnabled": false
+						},
+						"IsClone": false,
+						"CloneLevel": 0,
+						"Hosts": null,
+						"StorageName": null,
+						"Key": 0,
+						"NsmObjectID": 0
+					  }
+					],
+					"UserName": "",
+					"PluginParams": {
+					  "Data": [
+						{
+						  "Type": null,
+						  "Value": "10.192.39.29",
+						  "Key": "HOST",
+						  "Values": []
+						},
+						{
+						  "Type": null,
+						  "Value": "3306",
+						  "Key": "PORT",
+						  "Values": []
+						},
+						{
+						  "Type": null,
+						  "Value": "N",
+						  "Key": "MASTER_SLAVE",
+						  "Values": []
+						}
+					  ]
+					},
+					"Passphrase": "",
+					"MountPaths": null,
+					"Deleted": false,
+					"pluginConfiguration": null,
+					"Auth": {
+					  "Id": 5,
+					  "RunAsName": "apprenda_mysql",
+					  "AuthMode": 0,
+					  "UserName": "root",
+					  "Passpharse": "cm9vdPyJOrROz+9Ic4f+KZ6isBKQGhA0I03DssiauxbTAwJx6kYZSBNFZ2tfkOqr8rBwPvanEkj4EoVHOoUkg3RGi5yWLdlBA6xvcoU3YhmXhmQhIrdzD83255kuW9nFB8+fQFYpYL9sDbSFNrPxKHGc/SY=",
+					  "OwnerId": null,
+					  "HostName": null,
+					  "InstanceName": null,
+					  "CheckforAdministratorPrivilage": false,
+					  "TargetURL": null,
+					  "IsSudoEnabled": false
+					},
+					"IsClone": false,
+					"CloneLevel": 0,
+					"Hosts": null,
+					"StorageName": null,
+					* "Key": 3,
+					"NsmObjectID": 0
+				  },
+				  "Result": {
+					"_message": "",
+					"_errorCode": 0,
+					"ErrorRecords": []
+				  }
+				},
+				
+		  ],
+		  "Result": {
+			"_message": "",
+			"_errorCode": 0,
+			"ErrorRecords": []
+		  },
+		  "ConsistencyGroups": [],
+		  "TotalCount": 0,
+		  "ApplicationConsistencyGroup": null,
+		  "DisplayCount": 0,
+		  "FilesystemStorageFootprints": null,
+		  "Context": null
+		}
+	
+
+	
+	Parse the response for a key of Resource Group,	In this example the key is * 3
+	
+
+Create a MySQL policy for OnDemand Backup or Use the pre-created policy
+============================================================================================
+
+	* API Request URL ::
+	
+		https://<<SC-Server-IP>>/api/3.0/hosts/<<Linux-HostName>>/plugins/MySQL/resources?ResourceType=Database&ResourceName=<<Resource-Name>>
+	
+		
+
+	* Mandatory API Parameters
+		1) Token <<>>   // Your Auth Token
+		2) plugin: MySQL
+		3) CreatePolicyRequest ::
+			
+			{   
+				"Policy": {
+					"$type": "SMCoreContracts.SmBackupPolicy, SMCoreContracts",
+					"name": "<<OnDemand-Policy Name>>", 
+					"AppPolicies": [{"$type": "SMCoreContracts.SmSCAppPolicy, SMCoreContracts",       }     ],     
+					"Retentions": [{
+									"$type": "SMCoreContracts.SmRetention, SMCoreContracts",
+									"BackupType": "DATA",
+									"RetentionCount": 7,
+									"RetentionDays": 14,
+									"SchedulerType": "None",         
+									"VerificationEnabled": false       
+									}],
+					"Schedules": [{
+									"SchedulerType": "None"
+								}],
+					"PolicyType": "Backup",     
+					"ApplyRetention": true,     
+					"RetentionCount": 7,     
+					"RetentionDays": 14,     
+					"ApplySnapMirrorUpdate": false,     
+					"ApplySnapvaultUpdate": false,     
+					"MirrorVaultUpdateRetryCount": 0,     
+					"ScriptTimeOut": 60   
+				} 
+			}
+		
+
+	* Expected API Response	::
+	
+		Status 200
+		
+		
+		
+	* There is a pre-created OnDemand backup policy named "mysql_ondemand"  for this integretion.
+	
+
+			
+	.. note	:: This policy name will be required further in the Backup workflow.  	
+
+
+Protect the Resource
+================================================================
+
+	* API Request URL ::
+	
+		https://<<SnapCenter-Server-IP>>/api/3.0/plugins/<<MySQL>>/resources/<<Resource-Group-Key>>/protect
+		
+	
+	* Mandatory API Parameters
+		1)Token
+		2) Plugin
+		3) Key  //Resource Key
+		4)SmCreateProtectionGroupRequest ::
+		
+			{
+				"ProtectionGroup": 
+					{
+						"Configuration": 
+							{ 
+								"$type": "SMCoreContracts.SmBackupConfiguration, SMCoreContracts",
+								"Name": "rg_internal",
+								"PluginConfiguration": 
+								{
+									"$type": "SMCoreContracts.SmSCBackupConfiguration, SMCoreContracts",
+									"FileSystemConsistentSnapshot": false, 
+								},       
+								"ConfigurationType": "ProtectionGroup"     
+							},     
+						"Policies": [       
+										{
+										"Name": "<<OnDemand-Policy Name>>",
+										}
+									],
+						"ProtectionGroupType": "Backup"   
+					} 
+			}
+			
+	* Expected Response ::
+		
+		Response code: 201 > Resource Protected Sucessfully
+		
+		
+
+	
+	
+		
+		
+
+	
+
+Perform onDemand Backup of MySQL Database
+================================================================
+
+	* API Request URL ::
+	
+		https://<<SnapCenter-Server-IP>>/api/3.0/plugins/<<MySQL>>/resources/<<Resource-Group-Key>>/backup
+		
+	
+	* Mandatory API Parameters
+		1) Token    
+		2) Plugin  //MySQL
+		3) Key  //Resource Key
+		4) PolicyName //<<OnDemand-Policy Name>>
+
+	* POST API Body ::
+
+		{   "name": "mysql_ondemand" }
+		
+			
+	* Expected Response ::
+		
+		Response code: 202 > Resource Protected Sucessfully
+
+	* Sample CURL request ::
+
+		curl -X POST \
+		  https://10.192.39.22:8146/api/3.0/plugins/MySQL/resources/1/backup \
+		  -H 'content-type: application/json' \
+		  -H 'token: AwpBZ9pM2LoI2YLtxODW3zULAS99aWghq+rw5THb8TQjw5ef/NLjMPk2JZdxy5A7Q0qZ0UDgQXnPPj51K3NJVce5eIpm8lnrfgCBnid6zla0Rvc0a/iZscg76lZQuBvt63GrVNlRguD+Hr6cMDn5bRNtkCZEyH113Gf0dfZ9MjxsMQqWCDI38hqjNai+cyf2MfkHBoTPZTxvBliPy+MKlg==' \
+		  -d '{ "name": "mysql_ondemand" }'
+		
+		
+	* Response Headers ::
+	
+		{
+		  "pragma": "no-cache",
+		  "strict-transport-security": "max-age=31536000",
+		  "server": "Microsoft-IIS/8.5",
+		  "x-aspnet-version": "4.0.30319",
+		  "joburi": "https://<<SC-Server-IP>>/api/jobs/730",
+		  "x-powered-by": "ASP.NET",
+		  "x-frame-options": "SAMEORIGIN",
+		  "content-type": "text/plain; charset=utf-8",
+		  "access-control-allow-origin": "none",
+		  "cache-control": "no-cache",
+		  "access-control-allow-credentials": "false",
+		  "content-length": "16",
+		  "date": "Tue, 01 Aug 2017 12:05:55 GMT",
+		  "expires": "-1"
+		}
+		
+
+	.. note :: From the response header ""joburi": "<<SC-Server-IP>>/api/jobs/<<730>>"
+	
+				e.g: 730 will be the OnDemand Backup job id for this backup job
+
+Get the MySQL database backup details
+================================================================
+
+	* API Request URL ::
+	
+		https://<<SC-Server-IP>>/api/3.0/backups?JobId=<<BACKUP-JOB-ID>>
+		
+	
+	* Mandatory API Parameters
+		1) Token    
+		
+	* Expected Response Code ::
+		
+		Response code: 202 > Request Successful
+		
+		
+	*  Expected Response ::
+	
+		{
+		  "Job": {
+			"Name": null,
+			"Id": 0,
+			"StartTime": null,
+			"EndTime": null,
+			"IsCancellable": false,
+			"IsRestartable": false,
+			"IsCompleted": false,
+			"IsVisible": true,
+			"IsScheduled": false,
+			"PercentageCompleted": 0,
+			"Description": null,
+			"Status": 0,
+			"Owner": null,
+			"Error": null,
+			"Priority": 0,
+			"Tasks": [],
+			"ParentJobID": 0,
+			"EventId": 0,
+			"JobTypeId": null,
+			"ApisJobKey": null,
+			"ObjectId": 0,
+			"PluginCode": 0,
+			"PluginName": null
+		  },
+		  "Backups": [
+			{
+			  "BackupName": "app-linux2_lab_com_MySQL_apprenda_db_app-linux2_08-01-2017_07.09.11.4866",
+			  "Name": "",
+			  "BackupId": "611",
+			  "Type": "",
+			  "BackupType": "SCC_BACKUP",
+			  "Id": null,
+			  "BackupTime": "2017-08-01T07:07:38.079",
+			  "Host": null,
+			  "BackupComponents": [],
+			  "UserName": "",
+			  "JobId": 748,
+			  "Passphrase": "",
+			  "MetaObject": [
+				{
+				  "Type": null,
+				  "Value": "1",
+				  "Key": "HasMultipleResources",
+				  "Values": null
+				}
+			  ],
+			  "Deleted": false,
+			  "ProtectionGroupName": null,
+			  "Auth": {
+				"Id": 0,
+				"RunAsName": null,
+				"AuthMode": 0,
+				"UserName": null,
+				"Passpharse": null,
+				"OwnerId": null,
+				"HostName": null,
+				"InstanceName": null,
+				"CheckforAdministratorPrivilage": false,
+				"TargetURL": null,
+				"IsSudoEnabled": false
+			  },
+			  "PolicyName": null,
+			  "IsClone": false,
+			  "Startime": "2017-08-01T07:09:42.2401161-07:00",
+			  "CloneLevel": 0,
+			  "Endtime": "2017-08-01T07:09:42.2401161-07:00",
+			  "Hosts": null,
+			  "VerifyResultSummary": 0,
+			  "StorageName": null,
+			  "MountedPath": null,
+			  "Key": 0,
+			  "IsMounted": null,
+			  "NsmObjectID": 0,
+			  "MountedHostName": null,
+			  "CatalogBackupStatus": 0,
+			  "ScheduleType": 0
+			}
+		  ],
+		  "Result": {
+			"_message": "",
+			"_errorCode": 0,
+			"ErrorRecords": []
+		  },
+		  "TotalCount": 0,
+		  "DisplayCount": 0,
+		  "Context": null
+		}
+
+		
+		
+	.. note :: From the response parse the backup name  
+				e.g : "BackupName": "app-linux2_lab_com_MySQL_apprenda_db_app-linux2_08-01-2017_07.09.11.4866".
+				
+				This backup name is used as unique identifer to create a clone.
+				
+				
+				2) To find the latest backup name, Parse all the backups and sort them using the unique timestamps.
+				
+	
+		
+	
+Clone the MySQL Database from the backup
+================================================================
+
+
+	* API Request URL ::
+
+			https://<<SC-Server-IP>>/api/3.0/plugins/<<MySQL>>/resources/<<JOB-ID>>/clone
+			
+			
+	* Mandatory input for the API ::
+
+			1) Token
+			
+			2) Plugin
+			
+			3) Key
+			
+			4) A MySQL startup script on host (/var/lib/start-msql.sh) :: 
+			
+					>cat /var/lib/start-mysql.sh
+					
+						service mysqld stop;
+						/usr/sbin/mysqld --pid-file=/var/run/mysqld/mysqld2.pid --socket=/var/lib/mysql2/mysql.sock --user=mysql --datadir=/var/lib/mysql2 &
+
+			
+			
+
+		5) CreateCloneRequest  ::
+			
+				{   
+				"CloneConfiguration": 
+					{
+					"$type": "SMCoreContracts.SmCloneConfiguration, SMCoreContracts",     
+					"Suffix": "_clone1",     
+					"CloneConfigurationApplication": 
+						{
+							"$type": "SMCoreContracts.SmSCCloneConfiguration, SMCoreContracts", 
+							"MountCmd":["mount 10.192.39.72:%mysql_vol_Clone /var/lib/mysql2"],
+							"PostCloneCreateCmd": ["/var/lib/start-mysql.sh"]
+							"Host": "app-linux1.lab.com"     
+							}   
+						},   
+					"Backups": [    
+						{
+						"PrimaryBackup": 
+						{         
+							"BackupName": "app-linux2_lab_com_MySQL_apprenda_db_app-linux2_08-01-2017_07.09.11.4866"       
+						}     
+					}
+						], 
+				}
+			
+	
+	
+		.. note :: 1) /var/lib/start-msql.sh script should be present on linux hosts.
+		
+					 :: 
+					 
+						>cat start-mysql.sh
+						
+	
+	* Expected Response Code if Clone Creation is successful ::
+		
+		Response code: 200
+		
+
+
+
+
+
+
+Get All the Backup Details for DB from DB name (resource name)
+================================================================ 		
+
+	* API Request URL ::
+
+			https://<<SC-Server-IP>>/api/3.0/backups?Resource=<<DBName>>
+			
+	.. note :: For a clone it would be 
+			  https://10.192.39.22:8146/api/3.0/backups?Resource=<<DBName_clone1>>
+			
+			
+	* Mandatory input for the API ::
+
+			1) Token
+				
+	
+	* Expected Response Code :: 
+	
+			200 
+	
+	* Expected Response ::
+	
+			{
+				  "Job": {
+					"Name": null,
+					"Id": 0,
+					"StartTime": null,
+					"EndTime": null,
+					"IsCancellable": false,
+					"IsRestartable": false,
+					"IsCompleted": false,
+					"IsVisible": true,
+					"IsScheduled": false,
+					"PercentageCompleted": 0,
+					"Description": null,
+					"Status": 0,
+					"Owner": null,
+					"Error": null,
+					"Priority": 0,
+					"Tasks": [],
+					"ParentJobID": 0,
+					"EventId": 0,
+					"JobTypeId": null,
+					"ApisJobKey": null,
+					"ObjectId": 0,
+					"PluginCode": 0,
+					"PluginName": null
+				  },
+				  "Backups": [
+					{
+					  "BackupName": "app-linux2_lab_com_MySQL_akshay_app-linux2_10-30-2017_08.11.37.3755",
+					  "Name": "",
+					  "BackupId": "59",
+					  "Type": "",
+					  "BackupType": "SCC_BACKUP",
+					  "Id": null,
+					  "BackupTime": "2017-10-30T08:08:42.873",
+					  "Host": null,
+					  "BackupComponents": [],
+					  "UserName": "",
+					  "JobId": 623,
+					  "Passphrase": "",
+					  "MetaObject": [
+						{
+						  "Type": null,
+						  "Value": "1",
+						  "Key": "HasMultipleResources",
+						  "Values": null
+						}
+					  ],
+					  "Deleted": false,
+					  "ProtectionGroupName": null,
+					  "Auth": {
+						"Id": 0,
+						"RunAsName": null,
+						"AuthMode": 0,
+						"UserName": null,
+						"Passpharse": null,
+						"OwnerId": null,
+						"HostName": null,
+						"InstanceName": null,
+						"CheckforAdministratorPrivilage": false,
+						"TargetURL": null,
+						"IsSudoEnabled": false
+					  },
+					  "PolicyName": null,
+					  "IsClone": false,
+					  "Startime": "2017-10-31T01:06:23.19517-07:00",
+					  "CloneLevel": 0,
+					  "Endtime": "2017-10-31T01:06:23.19517-07:00",
+					  "Hosts": null,
+					  "VerifyResultSummary": 0,
+					  "StorageName": null,
+					  "MountedPath": null,
+					  "Key": 0,
+					  "IsMounted": null,
+					  "NsmObjectID": 0,
+					  "MountedHostName": null,
+					  "CatalogBackupStatus": 0,
+					  "ScheduleType": 0
+					}
+				  ],
+				  "Result": {
+					"_message": "",
+					"_errorCode": 0,
+					"ErrorRecords": []
+				  },
+				  "TotalCount": 0,
+				  "DisplayCount": 0,
+				  "Context": null
+				}
+	
+
+
+	.. note :: The latest backup will be found at the bottom in the JSON list.
+	
+	
+
+	
+Copy the Resource settings to clone via PUT request		
+=================================================================		
+		
+* API Request URL ::
+
+			https://<<SC-Server-IP>>/api/3.0/plugins/<<MySQL>>/resources/<<Clone Resource Key>>
+			
+	
+			
+			
+	* Mandatory input for the API ::
+
+			1) Token
+			
+			2) Plugin 
+			
+			3) Key  //Clone-Resource-Key
+			
+			4) 
+			
+			pluginresource ::
+			
+									{
+									  "RunAsNames": "app-linux1",
+									  "FootPrint": [
+										{
+										  "SVMName": "10.192.39.71",
+										  "VolAndLunsMapping": [
+											{
+											  "VolumeName": {
+												"Name": "<<clone_volume_name>>"
+											  }
+											}
+										  ]
+										}
+									  ],
+									  "PluginParams": {
+										"Data": [
+										  {
+											"Key": "PORT",
+											"Value": "3306"
+										  },
+									 {
+											"Key": "MASTER_SLAVE",
+											"Value": "N"
+										  },
+									 {
+											"Key": "HOST",
+											"Value": "<<clone-host-name>>"
+										  },
+										  
+										   {
+											"Key": "CLONE_UID",
+											"Value": "<<OurUniqueID for Clone>>"
+										  }
+										]
+									  }
+
+				
+	
+	* Expected Response Code :: 
+	
+			200 
+	
+	
+	.. note :: All these properties, e.g: (HOST, PORT, VolumeName,RunAsName etc are available in the above GET backup details API (https://<<SC-Server-IP>>/api/3.0/backups?Resource=<<DBName>>) call.
+		
+
+Get the Key for the Clone MySQL Database
+================================================================
+	This process is exactly same for getting the key for orignal db key.
+		
+	* API Request URL ::
+
+			'https://<<SC-Server-IP>>/api/3.0/hosts/<<Linux-Hostname>>/plugins/MySQL/resources?ResourceType=Database&ResourceName=<<Clone-Resource-Name>>
+			
+			
+	* Mandatory input for the API ::
+
+			1) Token    //
+			2) Name    //Hostname of the Linux Node
+			3) Instancetype //Database
+			
+	
+	* Expected Response Code if Clone Creation is successful ::
+		
+		Response code: 200
+	
+	.. note :: Parse the "key" field from the above respose. This key will be used to perform any operations on clone.
+	
+	
+Protect the Clone
+================================================================
+	This process is exactly same for getting the key for orignal db key.
+	
+	
+	* API Request URL ::
+	
+		https://<<SnapCenter-Server-IP>>/api/3.0/plugins/<<MySQL>>/resources/<<Resource-Group-Key>>/protect
+		
+	
+	* Mandatory API Parameters
+		1)Token
+		2) Plugin
+		3) Key  //Resource Key
+		4)SmCreateProtectionGroupRequest ::
+		
+			{
+				"ProtectionGroup": 
+					{
+						"Configuration": 
+							{ 
+								"$type": "SMCoreContracts.SmBackupConfiguration, SMCoreContracts",
+								"Name": "rg_internal",
+								"PluginConfiguration": 
+								{
+									"$type": "SMCoreContracts.SmSCBackupConfiguration, SMCoreContracts",
+									"FileSystemConsistentSnapshot": false, 
+								},       
+								"ConfigurationType": "ProtectionGroup"     
+							},     
+						"Policies": [       
+										{
+										"Name": "<<OnDemand-Policy Name>>",
+										}
+									],
+						"ProtectionGroupType": "Backup"   
+					} 
+			}
+			
+			
+Backup the clone
+================================================================		
+
+	* API Request URL ::
+	
+		https://<<SnapCenter-Server-IP>>/api/3.0/plugins/<<MySQL>>/resources/<<Resource-Group-Key>>/backup
+		
+	
+	* Mandatory API Parameters
+		1) Token    
+		2) Plugin  //MySQL
+		3) Key  //Resource Key
+		4) PolicyName //<<OnDemand-Policy Name>>
+
+	* POST API Body ::
+
+		{   "name": "mysql_ondemand" }
+		
+			
+	* Expected Response ::
+		
+		Response code: 202 > Resource Protected Sucessfully
+
+	* Sample CURL request ::
+
+		curl -X POST \
+		  https://10.192.39.22:8146/api/3.0/plugins/MySQL/resources/1/backup \
+		  -H 'content-type: application/json' \
+		  -H 'token: AwpBZ9pM2LoI2YLtxODW3zULAS99aWghq+rw5THb8TQjw5ef/NLjMPk2JZdxy5A7Q0qZ0UDgQXnPPj51K3NJVce5eIpm8lnrfgCBnid6zla0Rvc0a/iZscg76lZQuBvt63GrVNlRguD+Hr6cMDn5bRNtkCZEyH113Gf0dfZ9MjxsMQqWCDI38hqjNai+cyf2MfkHBoTPZTxvBliPy+MKlg==' \
+		  -d '{ "name": "mysql_ondemand" }'
+		
+		
+	* Response Headers ::
+	
+		{
+		  "pragma": "no-cache",
+		  "strict-transport-security": "max-age=31536000",
+		  "server": "Microsoft-IIS/8.5",
+		  "x-aspnet-version": "4.0.30319",
+		  "joburi": "https://<<SC-Server-IP>>/api/jobs/730",
+		  "x-powered-by": "ASP.NET",
+		  "x-frame-options": "SAMEORIGIN",
+		  "content-type": "text/plain; charset=utf-8",
+		  "access-control-allow-origin": "none",
+		  "cache-control": "no-cache",
+		  "access-control-allow-credentials": "false",
+		  "content-length": "16",
+		  "date": "Tue, 01 Aug 2017 12:05:55 GMT",
+		  "expires": "-1"
+		}
+		
+
+	.. note :: From the response header ""joburi": "<<SC-Server-IP>>/api/jobs/<<730>>"
+	
+				e.g: 730 will be the OnDemand Backup job id for this backup job
+				
+				
+				
+
+Get the Clone database backup details
+================================================================
+
+	* API Request URL ::
+	
+		https://<<SC-Server-IP>>/api/3.0/backups/?JobId=<<BACKUP-JOB-ID>>
+		
+	
+	* Mandatory API Parameters
+		1) Token    
+		
+	* Expected Response Code ::
+		
+		Response code: 202 > Request Successful
+		
+		
+	*  Expected Response ::
+	
+		{
+		  "Job": {
+			"Name": null,
+			"Id": 0,
+			"StartTime": null,
+			"EndTime": null,
+			"IsCancellable": false,
+			"IsRestartable": false,
+			"IsCompleted": false,
+			"IsVisible": true,
+			"IsScheduled": false,
+			"PercentageCompleted": 0,
+			"Description": null,
+			"Status": 0,
+			"Owner": null,
+			"Error": null,
+			"Priority": 0,
+			"Tasks": [],
+			"ParentJobID": 0,
+			"EventId": 0,
+			"JobTypeId": null,
+			"ApisJobKey": null,
+			"ObjectId": 0,
+			"PluginCode": 0,
+			"PluginName": null
+		  },
+		  "Backups": [
+			{
+			  "BackupName": "app-linux2_lab_com_MySQL_apprenda_db_app-linux2_08-01-2017_07.09.11.4866",
+			  "Name": "",
+			  "BackupId": "611",
+			  "Type": "",
+			  "BackupType": "SCC_BACKUP",
+			  "Id": null,
+			  "BackupTime": "2017-08-01T07:07:38.079",
+			  "Host": null,
+			  "BackupComponents": [],
+			  "UserName": "",
+			  "JobId": 748,
+			  "Passphrase": "",
+			  "MetaObject": [
+				{
+				  "Type": null,
+				  "Value": "1",
+				  "Key": "HasMultipleResources",
+				  "Values": null
+				}
+			  ],
+			  "Deleted": false,
+			  "ProtectionGroupName": null,
+			  "Auth": {
+				"Id": 0,
+				"RunAsName": null,
+				"AuthMode": 0,
+				"UserName": null,
+				"Passpharse": null,
+				"OwnerId": null,
+				"HostName": null,
+				"InstanceName": null,
+				"CheckforAdministratorPrivilage": false,
+				"TargetURL": null,
+				"IsSudoEnabled": false
+			  },
+			  "PolicyName": null,
+			  "IsClone": false,
+			  "Startime": "2017-08-01T07:09:42.2401161-07:00",
+			  "CloneLevel": 0,
+			  "Endtime": "2017-08-01T07:09:42.2401161-07:00",
+			  "Hosts": null,
+			  "VerifyResultSummary": 0,
+			  "StorageName": null,
+			  "MountedPath": null,
+			  "Key": 0,
+			  "IsMounted": null,
+			  "NsmObjectID": 0,
+			  "MountedHostName": null,
+			  "CatalogBackupStatus": 0,
+			  "ScheduleType": 0
+			}
+		  ],
+		  "Result": {
+			"_message": "",
+			"_errorCode": 0,
+			"ErrorRecords": []
+		  },
+		  "TotalCount": 0,
+		  "DisplayCount": 0,
+		  "Context": null
+		}
+
+		
+		
+	.. note :: From the response parse the backup name  
+				e.g : "BackupName": "app-linux2_lab_com_MySQL_apprenda_db_app-linux2_08-01-2017_07.09.11.4866".
+				
+				This backup name is used as unique identifer to create a clone.
+				
+				
+				2) To find the latest backup name, Parse all the backups and sort them using the unique timestamps.
+						
+						
+Restore the Clone database 
+================================================================
+
+	* API POST Request URL ::
+	
+		https://<<SC-Server-IP>>/api/3.0/plugins/<<MySQL>>/resources/<<Clone-Resource-Key>>/restore
+		
+	
+	* Mandatory API Parameters
+		1) Token    
+		
+	* Mandatory API Body :: 
+	
+			{
+			  "BackupInfo": {
+				"PrimaryBackup": {
+				  "BackupName": <<Clone-BackupName Here>>
+				}
+			  },
+			  "RestoreLastBackup": 0,
+			  "Configuration": {
+				"$type": "SMCoreContracts.SmSCRestoreConfiguration, SMCoreContracts",
+			  },
+			  "PluginCode": "SCC",
+			}
+		
+	* Expected Response Code ::
+		
+		Response code: 202 > Request Successful
+		
+	
+		
+		
+		
+		
+		1) Get All Resources  (from
+	
+				
+				

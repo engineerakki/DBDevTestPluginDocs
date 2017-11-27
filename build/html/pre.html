@@ -1,0 +1,513 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Pre-Requisites &mdash; DBaaS using Apprenda and SnapCenter 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="DBaaS using Apprenda and SnapCenter 1 documentation" href="index.html"/>
+        <link rel="prev" title="Welcome to DBaaS using Apprenda and SnapCenter’s documentation!" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> DBaaS using Apprenda and SnapCenter
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pre-Requisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#snapcenter-configuration">SnapCenter Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#apprenda-configuration">Apprenda Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#configuring-an-application-on-apprenda-to-use-dbdevtestplugin">Configuring an Application on Apprenda to use DBDevTestPlugin</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DBaaS using Apprenda and SnapCenter</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Pre-Requisites</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pre.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="pre-requisites">
+<span id="pre"></span><h1>Pre-Requisites<a class="headerlink" href="#pre-requisites" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ul class="simple">
+<li>1 running instance of NetApp SnapCenter 3.0+</li>
+<li>1 running instance of Apprenda 6.8 with atleast 2 Linux Hosts added</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="snapcenter-configuration">
+<h1>SnapCenter Configuration<a class="headerlink" href="#snapcenter-configuration" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first"><strong>Add hosts in in SnapCenter</strong></p>
+<blockquote>
+<div><p>1.1) Click on the hosts tab in SnapCenter</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/addhost1.png"><img alt="Add Host" src="_images/addhost1.png" style="width: 1678.0px; height: 414.0px;" /></a>
+</div>
+<p>1.2) Once the hosts screen pops up, enter the hostname of your linux host and a free port for the snapcenter agent to run and click Next.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/addhost2.png"><img alt="Add Host" src="_images/addhost2.png" style="width: 982.0px; height: 790.0px;" /></a>
+</div>
+<p>1.3) On the next screen, a list of plugins installed on the host will be shown. If a fresh configration is being done, this list will be empty. Verify your linux host name and click Next to view the list of available plugins for installation.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/addhost3.png"><img alt="Add Host" src="_images/addhost3.png" style="width: 982.0px; height: 791.0px;" /></a>
+</div>
+<p>1.4) Select the MySQL plugin checkbox in the Custom Plugins section to install the MySQL custom plugin on the host.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/addhost4.png"><img alt="Add Host" src="_images/addhost4.png" style="width: 979.0px; height: 790.0px;" /></a>
+</div>
+<p>1.5) Click Next to run the pre-install of plugin installation checks on the linux host.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/addhost5.png"><img alt="Add Host" src="_images/addhost5.png" style="width: 980.0px; height: 789.0px;" /></a>
+</div>
+<p>1.6) Check the details in the Summary tab and click Finish to add a linux host with MySQL plugin in SnapCenter</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/addhost6.png"><img alt="Add Host" src="_images/addhost6.png" style="width: 981.0px; height: 790.0px;" /></a>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Add atleast 2 linux hosts in SnapCenter instance</p>
+</div>
+<ol class="arabic simple" start="2">
+<li><strong>Add Database (Resources) in SnapCenter</strong></li>
+</ol>
+<p>To protect a database with Snapcenter , it needs to be added in SnapCenter using following steps:-</p>
+<blockquote>
+<div><p>2.1) Click the resources tab in Snapcenter</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/addresource1.png"><img alt="Add resource" src="_images/addresource1.png" style="width: 1673.0px; height: 392.0px;" /></a>
+</div>
+<p>2.2) Provide the following Database(resource) details :-</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/addresource2.png"><img alt="Add resource2" src="_images/addresource2.png" style="width: 982.0px; height: 791.0px;" /></a>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="68%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Field</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Name</td>
+<td>Database Name</td>
+</tr>
+<tr class="row-odd"><td>Hostname</td>
+<td>Hostname of production database</td>
+</tr>
+<tr class="row-even"><td>Type</td>
+<td>Database</td>
+</tr>
+<tr class="row-odd"><td>Run As Name</td>
+<td>Credentials of the production database</td>
+</tr>
+</tbody>
+</table>
+<p>2.3) Add/Select Storage footprint(Select the NetApp Volume) for the MySQL database</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/addresource4.png"><img alt="Add resource2" src="_images/addresource4.png" style="width: 981.0px; height: 789.0px;" /></a>
+</div>
+<p>2.4) Add Resource Settings for SnapCenter’s MySQL plugin.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/addresource5.png"><img alt="Add resource5" src="_images/addresource5.png" style="width: 980.0px; height: 790.0px;" /></a>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Field</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>HOST</td>
+<td>Database Connection Name</td>
+</tr>
+<tr class="row-odd"><td>MASTER_SLAVE</td>
+<td>N</td>
+</tr>
+<tr class="row-even"><td>PORT</td>
+<td>Database PORT</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><strong>Add MySQL start scripts on linux hosts</strong></li>
+</ol>
+<p>This integretions uses a shell script(restart-mysql.sh) on the linux hosts to restart mysql databases during restore process. This script should be present at /var/lib/restart-mysql.sh on all linux hosts.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/restartmysql.png"><img alt="Restart MySQL database" src="_images/restartmysql.png" style="width: 1368.0px; height: 148.0px;" /></a>
+</div>
+<p>restart-mysql.sh</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>service mysqld stop<span class="p">;</span>
+/usr/sbin/mysqld --pid-file<span class="o">=</span>/var/run/mysqld/mysqld2.pid --socket<span class="o">=</span>/var/lib/mysql2/mysql.sock --user<span class="o">=</span>mysql --datadir<span class="o">=</span>/var/libmysql2 <span class="p">&amp;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="apprenda-configuration">
+<h1>Apprenda Configuration<a class="headerlink" href="#apprenda-configuration" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first"><strong>Setting up Apprenda Custom Properties</strong></p>
+<blockquote>
+<div><blockquote>
+<div><p>Apprenda uses few custom properties in this integretion to interact with Snapcenter
+To configure these custom properties,
+1.1) Login to Apprenda DashBoard
+1.2) Select Configurataion in the top menu bar
+1.3) Select Custom Properties</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/apprendacustomprop1.png"><img alt="Custom Properties" src="_images/apprendacustomprop1.png" style="width: 1599.0px; height: 730.0px;" /></a>
+</div>
+<p>Following custom properties need to be setup in this integretion</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/apprendacustomprop2.png"><img alt="Custom Properties" src="_images/apprendacustomprop2.png" style="width: 1580.0px; height: 716.0px;" /></a>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="42%" />
+<col width="44%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Property</th>
+<th class="head">Value</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>SnapCenterAdmin</td>
+<td>&lt;SnapCenter Username&gt;</td>
+<td>Enter the SnapCenter username in (DomainUserName) format</td>
+</tr>
+<tr class="row-odd"><td>SnapCenterPassword</td>
+<td>&lt;SnapCenter Password&gt;</td>
+<td>Enter the SnapCenter password</td>
+</tr>
+<tr class="row-even"><td>SnapCenterUrl</td>
+<td>&lt;SnapCenter  URL with port&gt;</td>
+<td>Enter full SnapCenter URL with port i.e <a class="reference external" href="https://ip:port/">https://ip:port/</a></td>
+</tr>
+<tr class="row-odd"><td>SnapDataLeafIP</td>
+<td>&#160;</td>
+<td>Enter the DataLIF ip of the storage</td>
+</tr>
+<tr class="row-even"><td>SnapDBHost</td>
+<td>&lt;Hostname of production DB&gt;</td>
+<td>Enter the Hostname of your production db</td>
+</tr>
+<tr class="row-odd"><td>SnapDBCloneHost</td>
+<td>&lt;Hostname of clone hosts&gt;</td>
+<td>Enter the Hostnames where the clones can be mounted</td>
+</tr>
+<tr class="row-even"><td>SnapDBName</td>
+<td>&lt;Name of Production Database&gt;</td>
+<td>Enter name of the procdtion database</td>
+</tr>
+<tr class="row-odd"><td>SnapMountPath</td>
+<td>&lt;Mount path to mount the clones&gt;</td>
+<td>Enter the path to mount the clones</td>
+</tr>
+<tr class="row-even"><td>SnapMountScript</td>
+<td>&lt;Location of Shell script to restart MySQL Service&gt;</td>
+<td>Location of the RestartMySQL script (restart-mysql.sh)</td>
+</tr>
+<tr class="row-odd"><td>SnapPlugin</td>
+<td>MySQL</td>
+<td>Currently only MySQL is supported with this integretion</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p class="first"><strong>Setup a Apprenda BootStrap Policy</strong></p>
+<blockquote>
+<div><p>2.1) Apprenda Bootstrap policy allows us to select the</p>
+<p>2.2) Download the bootstrap policy here</p>
+<p>2.3) Upload the BootStrap policy to Configration &gt;  Application Bootstrap Policies as shown in below figure:</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/apprendabootstrap.png"><img alt="BootStrap Policy" src="_images/apprendabootstrap.png" style="width: 1580.0px; height: 529.0px;" /></a>
+</div>
+<p>2.4) Click Save</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>Adding the DbDevTest Extension in Apprenda</strong></p>
+<blockquote>
+<div><p>3.1) Download the extention here</p>
+<p>3.2) Create a New app in Apprenda Developer portal(<a class="reference external" href="http:/">http:/</a>/&lt;&lt;your-apprenda-url&gt;&gt;/developer</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/dbplugin1.png"><img alt="Plugin" src="_images/dbplugin1.png" style="width: 1465.0px; height: 397.0px;" /></a>
+</div>
+<p>3.3) Click Save and Continue</p>
+</div></blockquote>
+</li>
+</ol>
+</div></blockquote>
+</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="configuring-an-application-on-apprenda-to-use-dbdevtestplugin">
+<h1>Configuring an Application on Apprenda to use DBDevTestPlugin<a class="headerlink" href="#configuring-an-application-on-apprenda-to-use-dbdevtestplugin" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Add the following Deployment properties to your Apprenda App from Configure&gt;Application&gt;Deployment tab of your application.</li>
+</ol>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="38%" />
+<col width="49%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Property</th>
+<th class="head">Value</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Database User</td>
+<td>&lt;Username of MySQL Database&gt;</td>
+<td>Enter the mysql username application uses to connect to MySQL Database</td>
+</tr>
+<tr class="row-odd"><td>SnapDBName</td>
+<td>&lt;Name of Database used by Application&gt;</td>
+<td>Name of Database used by application</td>
+</tr>
+<tr class="row-even"><td>DBCloneType</td>
+<td>&lt;RestoreClone,CloneOrignal&gt;</td>
+<td>Select the plugin function to restore/clone via dropdown</td>
+</tr>
+<tr class="row-odd"><td>SnapPlugin</td>
+<td>&lt;MySQL&gt;</td>
+<td>Currently only MySQL is supported with this integretion</td>
+</tr>
+<tr class="row-even"><td>User Credentials</td>
+<td>&lt;Password for MySQL User&gt;</td>
+<td>Password for MySQL User</td>
+</tr>
+</tbody>
+</table>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/configureapp.png"><img alt="Plugin" src="_images/configureapp.png" style="width: 1536.0px; height: 942.0px;" /></a>
+</div>
+<p>2)If the Application in launched with the custom property DBCloneType as CloneOrignal then the DBDevTest plugin will create a clone</p>
+<p>3)If the Application is started with custom property set as Restore clone then, the DBDevTest plugin will restore the application’s database to it’s orignal state from the latest snapshot.</p>
+</div></blockquote>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to DBaaS using Apprenda and SnapCenter’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Akshay Patil.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

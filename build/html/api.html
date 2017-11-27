@@ -1,0 +1,1581 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Authentication &mdash; DBaaS using Apprenda and SnapCenter 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="DBaaS using Apprenda and SnapCenter 1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> DBaaS using Apprenda and SnapCenter
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Authentication</a></li>
+<li><a class="reference internal" href="#get-the-resource-key-for-the-mysql-db-resource">Get the Resource key for the MySQL DB Resource</a></li>
+<li><a class="reference internal" href="#create-a-mysql-policy-for-ondemand-backup-or-use-the-pre-created-policy">Create a MySQL policy for OnDemand Backup or Use the pre-created policy</a></li>
+<li><a class="reference internal" href="#protect-the-resource">Protect the Resource</a></li>
+<li><a class="reference internal" href="#perform-ondemand-backup-of-mysql-database">Perform onDemand Backup of MySQL Database</a></li>
+<li><a class="reference internal" href="#get-the-mysql-database-backup-details">Get the MySQL database backup details</a></li>
+<li><a class="reference internal" href="#clone-the-mysql-database-from-the-backup">Clone the MySQL Database from the backup</a></li>
+<li><a class="reference internal" href="#get-all-the-backup-details-for-db-from-db-name-resource-name">Get All the Backup Details for DB from DB name (resource name)</a></li>
+<li><a class="reference internal" href="#copy-the-resource-settings-to-clone-via-put-request">Copy the Resource settings to clone via PUT request</a></li>
+<li><a class="reference internal" href="#get-the-key-for-the-clone-mysql-database">Get the Key for the Clone MySQL Database</a></li>
+<li><a class="reference internal" href="#protect-the-clone">Protect the Clone</a></li>
+<li><a class="reference internal" href="#backup-the-clone">Backup the clone</a></li>
+<li><a class="reference internal" href="#get-the-clone-database-backup-details">Get the Clone database backup details</a></li>
+<li><a class="reference internal" href="#restore-the-clone-database">Restore the Clone database</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DBaaS using Apprenda and SnapCenter</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Authentication</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="authentication">
+<h1>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h1>
+<p>All Snapcenter API’s require an authentication token to be executed successfully. An authentication token can be generated via API.</p>
+<blockquote>
+<div><ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>https://&lt;&lt;SnapCenter-Server-IP&gt;&gt;/api/3.0/auth/login?TokenNeverExpires=true
+</pre></div>
+</div>
+</li>
+<li><p class="first">Mandatory API Parameters:-</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first">TokenNeverExpires = True</p>
+</li>
+<li><p class="first">User Operation Context</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;UserOperationContext&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;User&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;&lt;Domain&gt;&gt;</span><span class="se">\\</span><span class="s2">&lt;&lt;Username&gt;&gt;&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;&lt;SnapcenterPassword&gt;&gt;&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Rolename&quot;</span><span class="p">:</span> <span class="s2">&quot;SnapCenterAdmin&quot;</span>
+        <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</li>
+<li><p class="first">Expected Response</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;Job&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;StartTime&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;EndTime&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;IsCancellable&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsRestartable&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsCompleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsVisible&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+        <span class="s2">&quot;IsScheduled&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;PercentageCompleted&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Owner&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Error&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Priority&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Tasks&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;ParentJobID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;EventId&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;JobTypeId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;ApisJobKey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;ObjectId&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;PluginCode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;PluginName&quot;</span><span class="p">:</span> <span class="n">null</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;User&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Token&quot;</span><span class="p">:</span> <span class="s2">&quot;66PEpittWC/Y/46P49Nn2cimpgxj10HMqTc2kRkdjgDOLNawlgS1kHgjLQYXsuUjuybW0t9o7PbkpQH88ri6cDJkksLtf4x6GF9jtHU88rG3T1L1GBK0JM7nia+k1+f8Z7hP71gtFMotBJCawVIXeFwLpaEUdUtJMuyWj50Zmma0BNWgY9hbXQw+VpGt8wjnRXUVYLG7elBhThhLP/HHHw==&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;administrator&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TokenHashed&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TokenTime&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-08-08T02:14:14.060481-07:00&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;FullName&quot;</span><span class="p">:</span> <span class="s2">&quot;LAB</span><span class="se">\\</span><span class="s2">administrator&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Host&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Author&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Domain&quot;</span><span class="p">:</span> <span class="s2">&quot;LAB&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Deleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;TokenNeverExpires&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;Auth&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;RunAsName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;AuthMode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;Passpharse&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;OwnerId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;HostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;InstanceName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;CheckforAdministratorPrivilage&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+          <span class="s2">&quot;TargetURL&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;IsSudoEnabled&quot;</span><span class="p">:</span> <span class="n">false</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;IsAdmin&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+        <span class="s2">&quot;IsClone&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;TenantAdmin&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;CloneLevel&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;IsNewUser&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Hosts&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;UserGroupObjectType&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;StorageName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;RoleName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;RoleId&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;NsmObjectID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;GroupIds&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;GroupNames&quot;</span><span class="p">:</span> <span class="n">null</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;Result&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;_message&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_errorCode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;ErrorRecords&quot;</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;TotalCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;DisplayCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;Context&quot;</span><span class="p">:</span> <span class="n">null</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Parse the token from the above response
+E.g:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">6</span><span class="n">PEpittWC</span><span class="o">/</span><span class="n">Y</span><span class="o">/</span><span class="mi">46</span><span class="n">P49Nn2cimpgxj10HMqTc2kRkdjgDOLNawlgS1kHgjLQYXsuUjuybW0t9o7PbkpQH88ri6cDJkksLtf4x6GF9jtHU88rG3T1L1GBK0JM7nia</span><span class="o">+</span><span class="n">k1</span><span class="o">+</span><span class="n">f8Z7hP71gtFMotBJCawVIXeFwLpaEUdUtJMuyWj50Zmma0BNWgY9hbXQw</span><span class="o">+</span><span class="n">VpGt8wjnRXUVYLG7elBhThhLP</span><span class="o">/</span><span class="n">HHHw</span><span class="o">==</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The Authentication token is requires all future API calls.</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="get-the-resource-key-for-the-mysql-db-resource">
+<h1>Get the Resource key for the MySQL DB Resource<a class="headerlink" href="#get-the-resource-key-for-the-mysql-db-resource" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>https://&lt;&lt;SC-Server-IP&gt;&gt;/api/3.0/hosts/&lt;&lt;Linux-HostName&gt;&gt;/plugins/MySQL/resources?ResourceType=Database&amp;ResourceName=&lt;&lt;Resource-Name&gt;&gt;
+</pre></div>
+</div>
+</li>
+<li><dl class="first docutils">
+<dt>Mandatory API Parameters</dt>
+<dd><ol class="first last arabic simple">
+<li>Token    //</li>
+<li>Name    //Hostname of the Linux Node</li>
+<li>Instancetype //Database</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">Expected API Response</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;Job&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">799</span><span class="p">,</span>
+        <span class="s2">&quot;StartTime&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;EndTime&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;IsCancellable&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsRestartable&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsCompleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsVisible&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+        <span class="s2">&quot;IsScheduled&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;PercentageCompleted&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Owner&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Error&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Priority&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Tasks&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;ParentJobID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;EventId&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;JobTypeId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;ApisJobKey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;ObjectId&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;PluginCode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;PluginName&quot;</span><span class="p">:</span> <span class="n">null</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;Resources&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;PluginCode&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+          <span class="s2">&quot;OperationResults&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                  <span class="s2">&quot;Target&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SmSCPluginResource, SMCoreContracts&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;PluginName&quot;</span><span class="p">:</span> <span class="s2">&quot;MySQL&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;apprendadb&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Uid&quot;</span><span class="p">:</span> <span class="s2">&quot;apprendadb&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;Database&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;ParentUid&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="s2">&quot;app-linux2.lab.com</span><span class="se">\\</span><span class="s2">MySQL</span><span class="se">\\</span><span class="s2">apprendadb&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;SmAppFiles&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;Host&quot;</span><span class="p">:</span> <span class="s2">&quot;app-linux2.lab.com&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;SmAppFileStorageGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                          <span class="p">{</span>
+                                <span class="s2">&quot;Files&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                                <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;StorageFootPrint&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                  <span class="s2">&quot;HostResource&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;StorageSystemResources&quot;</span><span class="p">:</span> <span class="p">[</span>
+                                        <span class="p">{</span>
+                                          <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SDStorageSystemDirectory, SMCoreContracts&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;StorageSystemId&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                                <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Aliases&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                                                <span class="s2">&quot;Port&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;SmIPAddresses&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                                                <span class="s2">&quot;TransportType&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;10.192.39.71&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;Mode&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;OntapiMajorVersion&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;OntapiMinorVersion&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Version&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;StorageSystemOSType&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                                <span class="s2">&quot;Timeout&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Uuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;OperationContext&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;PreferredIpAddress&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Domain&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;VServerInterfaceList&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                                                <span class="s2">&quot;OperationContextIsGroup&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                                <span class="s2">&quot;StorageKey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Site&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;GroupName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;PlatformType&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;LicenseKeyType&quot;</span><span class="p">:</span> <span class="mi">0</span>
+                                          <span class="p">},</span>
+                                          <span class="s2">&quot;ResourceType&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+                                          <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;10.192.39.71:/vol/mysql_vol&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;Volume&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                                <span class="s2">&quot;ResourceType&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+                                                <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;mysql_vol&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;Vserver&quot;</span><span class="p">:</span> <span class="s2">&quot;10.192.39.71&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;ResourceName&quot;</span><span class="p">:</span> <span class="s2">&quot;10.192.39.71:/vol/mysql_vol&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;SDStorageVolume&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;FullPath&quot;</span><span class="p">:</span> <span class="s2">&quot;10.192.39.71:/vol/mysql_vol&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;Ranges&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;JunctionPath&quot;</span><span class="p">:</span> <span class="s2">&quot;/mysql_vol&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;Host&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;JunctionParentName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;SizeTotal&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;SizeUsed&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Deleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                                <span class="s2">&quot;SnapMirrorSource&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Auth&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                                  <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                                  <span class="s2">&quot;RunAsName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                  <span class="s2">&quot;AuthMode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                                  <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                  <span class="s2">&quot;Passpharse&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                  <span class="s2">&quot;OwnerId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                  <span class="s2">&quot;HostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                  <span class="s2">&quot;InstanceName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                  <span class="s2">&quot;CheckforAdministratorPrivilage&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                                  <span class="s2">&quot;TargetURL&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                  <span class="s2">&quot;IsSudoEnabled&quot;</span><span class="p">:</span> <span class="n">false</span>
+                                                <span class="p">},</span>
+                                                <span class="s2">&quot;SnapMirrorDest&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;IsClone&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                                <span class="s2">&quot;SnapVaultPrimary&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;CloneLevel&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                                <span class="s2">&quot;SnapVaultSecondary&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Hosts&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;FlexCloneEnabled&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;StorageName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;IsFlexClone&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                                <span class="s2">&quot;VolumeSecurityStyle&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;NsmObjectID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                                <span class="s2">&quot;AggregateName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;AggregateUuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;FlexCloneLevel&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;IsLeaf&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;VolumeState&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;AggregateAvailableSpace&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;ExportPolicy&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;VolumeUuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;OwningVserverName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;VolumeType&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;IsProtected&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                                <span class="s2">&quot;StorageVmKey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;VolumeKey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;VolumeInstanceUuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Size&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;IsRootVolume&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;IsSelectable&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;StorageKey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;ProtectionStatus&quot;</span><span class="p">:</span> <span class="n">null</span>
+                                          <span class="p">},</span>
+                                          <span class="s2">&quot;ResourceName&quot;</span><span class="p">:</span> <span class="s2">&quot;10.192.39.71:/mysql_vol&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;SDStorageDir&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;LogicalPath&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;Ranges&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;PhysicalPath&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;Host&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;RelativePhysicalPath&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;JunctionPath&quot;</span><span class="p">:</span> <span class="s2">&quot;/mysql_vol&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;NestJunctionPath&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;Deleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                          <span class="s2">&quot;NestVolumes&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;Auth&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                                <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                                <span class="s2">&quot;RunAsName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;AuthMode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                                <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;Passpharse&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;OwnerId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;HostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;InstanceName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;CheckforAdministratorPrivilage&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                                <span class="s2">&quot;TargetURL&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                                <span class="s2">&quot;IsSudoEnabled&quot;</span><span class="p">:</span> <span class="n">false</span>
+                                          <span class="p">},</span>
+                                          <span class="s2">&quot;NestJunctionParentVolume&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;IsClone&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                          <span class="s2">&quot;LeafVolume&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;CloneLevel&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                          <span class="s2">&quot;Files&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;Hosts&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;StorageName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                          <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                          <span class="s2">&quot;NsmObjectID&quot;</span><span class="p">:</span> <span class="mi">0</span>
+                                        <span class="p">}</span>
+                                  <span class="p">],</span>
+                                  <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;VirtualResources&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                                  <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;Host&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Deleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                  <span class="s2">&quot;Auth&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                        <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                        <span class="s2">&quot;RunAsName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                        <span class="s2">&quot;AuthMode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                        <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                        <span class="s2">&quot;Passpharse&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                        <span class="s2">&quot;OwnerId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                        <span class="s2">&quot;HostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                        <span class="s2">&quot;InstanceName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                        <span class="s2">&quot;CheckforAdministratorPrivilage&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                        <span class="s2">&quot;TargetURL&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                        <span class="s2">&quot;IsSudoEnabled&quot;</span><span class="p">:</span> <span class="n">false</span>
+                                  <span class="p">},</span>
+                                  <span class="s2">&quot;IsClone&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                  <span class="s2">&quot;CloneLevel&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                  <span class="s2">&quot;Hosts&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;StorageName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                  <span class="s2">&quot;NsmObjectID&quot;</span><span class="p">:</span> <span class="mi">0</span>
+                                <span class="p">},</span>
+                                <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                <span class="s2">&quot;Host&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;Deleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                <span class="s2">&quot;Auth&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                  <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                  <span class="s2">&quot;RunAsName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;AuthMode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                  <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;Passpharse&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;OwnerId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;HostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;InstanceName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;CheckforAdministratorPrivilage&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                  <span class="s2">&quot;TargetURL&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;IsSudoEnabled&quot;</span><span class="p">:</span> <span class="n">false</span>
+                                <span class="p">},</span>
+                                <span class="s2">&quot;IsClone&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                <span class="s2">&quot;CloneLevel&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                <span class="s2">&quot;Hosts&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                <span class="s2">&quot;StorageName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                <span class="s2">&quot;NsmObjectID&quot;</span><span class="p">:</span> <span class="mi">0</span>
+                          <span class="p">}</span>
+                        <span class="p">],</span>
+                        <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;PluginParams&quot;</span><span class="p">:</span> <span class="p">{</span>
+                          <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                                <span class="p">{</span>
+                                  <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;10.192.39.29&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;HOST&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[]</span>
+                                <span class="p">},</span>
+                                <span class="p">{</span>
+                                  <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;3306&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;PORT&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[]</span>
+                                <span class="p">},</span>
+                                <span class="p">{</span>
+                                  <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                                  <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;MASTER_SLAVE&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[]</span>
+                                <span class="p">}</span>
+                          <span class="p">]</span>
+                        <span class="p">},</span>
+                        <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;MountPaths&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;Deleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                        <span class="s2">&quot;pluginConfiguration&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;Auth&quot;</span><span class="p">:</span> <span class="p">{</span>
+                          <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                          <span class="s2">&quot;RunAsName&quot;</span><span class="p">:</span> <span class="s2">&quot;apprenda_mysql&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;AuthMode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                          <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;Passpharse&quot;</span><span class="p">:</span> <span class="s2">&quot;cm9vdPyJOrROz+9Ic4f+KZ6isBKQGhA0I03DssiauxbTAwJx6kYZSBNFZ2tfkOqr8rBwPvanEkj4EoVHOoUkg3RGi5yWLdlBA6xvcoU3YhmXhmQhIrdzD83255kuW9nFB8+fQFYpYL9sDbSFNrPxKHGc/SY=&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;OwnerId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                          <span class="s2">&quot;HostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                          <span class="s2">&quot;InstanceName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                          <span class="s2">&quot;CheckforAdministratorPrivilage&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                          <span class="s2">&quot;TargetURL&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                          <span class="s2">&quot;IsSudoEnabled&quot;</span><span class="p">:</span> <span class="n">false</span>
+                        <span class="p">},</span>
+                        <span class="s2">&quot;IsClone&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                        <span class="s2">&quot;CloneLevel&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;Hosts&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;StorageName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="o">*</span> <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                        <span class="s2">&quot;NsmObjectID&quot;</span><span class="p">:</span> <span class="mi">0</span>
+                  <span class="p">},</span>
+                  <span class="s2">&quot;Result&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;_message&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;_errorCode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;ErrorRecords&quot;</span><span class="p">:</span> <span class="p">[]</span>
+                  <span class="p">}</span>
+                <span class="p">},</span>
+
+  <span class="p">],</span>
+  <span class="s2">&quot;Result&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;_message&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_errorCode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;ErrorRecords&quot;</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;ConsistencyGroups&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;TotalCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;ApplicationConsistencyGroup&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+  <span class="s2">&quot;DisplayCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;FilesystemStorageFootprints&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+  <span class="s2">&quot;Context&quot;</span><span class="p">:</span> <span class="n">null</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Parse the response for a key of Resource Group, In this example the key is * 3</p>
+</div></blockquote>
+</div>
+<div class="section" id="create-a-mysql-policy-for-ondemand-backup-or-use-the-pre-created-policy">
+<h1>Create a MySQL policy for OnDemand Backup or Use the pre-created policy<a class="headerlink" href="#create-a-mysql-policy-for-ondemand-backup-or-use-the-pre-created-policy" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>https://&lt;&lt;SC-Server-IP&gt;&gt;/api/3.0/hosts/&lt;&lt;Linux-HostName&gt;&gt;/plugins/MySQL/resources?ResourceType=Database&amp;ResourceName=&lt;&lt;Resource-Name&gt;&gt;
+</pre></div>
+</div>
+</li>
+<li><dl class="first docutils">
+<dt>Mandatory API Parameters</dt>
+<dd><ol class="first last arabic">
+<li><p class="first">Token &lt;&lt;&gt;&gt;   // Your Auth Token</p>
+</li>
+<li><p class="first">plugin: MySQL</p>
+</li>
+<li><p class="first">CreatePolicyRequest</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+        <span class="s2">&quot;Policy&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SmBackupPolicy, SMCoreContracts&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;&lt;OnDemand-Policy Name&gt;&gt;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;AppPolicies&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SmSCAppPolicy, SMCoreContracts&quot;</span><span class="p">,</span>       <span class="p">}</span>     <span class="p">],</span>
+                <span class="s2">&quot;Retentions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+                                                <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SmRetention, SMCoreContracts&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;BackupType&quot;</span><span class="p">:</span> <span class="s2">&quot;DATA&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;RetentionCount&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+                                                <span class="s2">&quot;RetentionDays&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+                                                <span class="s2">&quot;SchedulerType&quot;</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;VerificationEnabled&quot;</span><span class="p">:</span> <span class="n">false</span>
+                                                <span class="p">}],</span>
+                <span class="s2">&quot;Schedules&quot;</span><span class="p">:</span> <span class="p">[{</span>
+                                                <span class="s2">&quot;SchedulerType&quot;</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span>
+                                        <span class="p">}],</span>
+                <span class="s2">&quot;PolicyType&quot;</span><span class="p">:</span> <span class="s2">&quot;Backup&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ApplyRetention&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+                <span class="s2">&quot;RetentionCount&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+                <span class="s2">&quot;RetentionDays&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+                <span class="s2">&quot;ApplySnapMirrorUpdate&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                <span class="s2">&quot;ApplySnapvaultUpdate&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                <span class="s2">&quot;MirrorVaultUpdateRetryCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;ScriptTimeOut&quot;</span><span class="p">:</span> <span class="mi">60</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">Expected API Response</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Status</span> <span class="mi">200</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">There is a pre-created OnDemand backup policy named “mysql_ondemand”  for this integretion.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This policy name will be required further in the Backup workflow.</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="protect-the-resource">
+<h1>Protect the Resource<a class="headerlink" href="#protect-the-resource" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//&lt;&lt;</span><span class="n">SnapCenter</span><span class="o">-</span><span class="n">Server</span><span class="o">-</span><span class="n">IP</span><span class="o">&gt;&gt;/</span><span class="n">api</span><span class="o">/</span><span class="mf">3.0</span><span class="o">/</span><span class="n">plugins</span><span class="o">/&lt;&lt;</span><span class="n">MySQL</span><span class="o">&gt;&gt;/</span><span class="n">resources</span><span class="o">/&lt;&lt;</span><span class="n">Resource</span><span class="o">-</span><span class="n">Group</span><span class="o">-</span><span class="n">Key</span><span class="o">&gt;&gt;/</span><span class="n">protect</span>
+</pre></div>
+</div>
+</li>
+<li><dl class="first docutils">
+<dt>Mandatory API Parameters</dt>
+<dd><p class="first">1)Token
+2) Plugin
+3) Key  //Resource Key
+4)SmCreateProtectionGroupRequest</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+        <span class="s2">&quot;ProtectionGroup&quot;</span><span class="p">:</span>
+                <span class="p">{</span>
+                        <span class="s2">&quot;Configuration&quot;</span><span class="p">:</span>
+                                <span class="p">{</span>
+                                        <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SmBackupConfiguration, SMCoreContracts&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;rg_internal&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;PluginConfiguration&quot;</span><span class="p">:</span>
+                                        <span class="p">{</span>
+                                                <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SmSCBackupConfiguration, SMCoreContracts&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;FileSystemConsistentSnapshot&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                        <span class="p">},</span>
+                                        <span class="s2">&quot;ConfigurationType&quot;</span><span class="p">:</span> <span class="s2">&quot;ProtectionGroup&quot;</span>
+                                <span class="p">},</span>
+                        <span class="s2">&quot;Policies&quot;</span><span class="p">:</span> <span class="p">[</span>
+                                                        <span class="p">{</span>
+                                                        <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;&lt;OnDemand-Policy Name&gt;&gt;&quot;</span><span class="p">,</span>
+                                                        <span class="p">}</span>
+                                                <span class="p">],</span>
+                        <span class="s2">&quot;ProtectionGroupType&quot;</span><span class="p">:</span> <span class="s2">&quot;Backup&quot;</span>
+                <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><p class="first">Expected Response</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Response</span> <span class="n">code</span><span class="p">:</span> <span class="mi">201</span> <span class="o">&gt;</span> <span class="n">Resource</span> <span class="n">Protected</span> <span class="n">Sucessfully</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="perform-ondemand-backup-of-mysql-database">
+<h1>Perform onDemand Backup of MySQL Database<a class="headerlink" href="#perform-ondemand-backup-of-mysql-database" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//&lt;&lt;</span><span class="n">SnapCenter</span><span class="o">-</span><span class="n">Server</span><span class="o">-</span><span class="n">IP</span><span class="o">&gt;&gt;/</span><span class="n">api</span><span class="o">/</span><span class="mf">3.0</span><span class="o">/</span><span class="n">plugins</span><span class="o">/&lt;&lt;</span><span class="n">MySQL</span><span class="o">&gt;&gt;/</span><span class="n">resources</span><span class="o">/&lt;&lt;</span><span class="n">Resource</span><span class="o">-</span><span class="n">Group</span><span class="o">-</span><span class="n">Key</span><span class="o">&gt;&gt;/</span><span class="n">backup</span>
+</pre></div>
+</div>
+</li>
+<li><dl class="first docutils">
+<dt>Mandatory API Parameters</dt>
+<dd><ol class="first last arabic simple">
+<li>Token</li>
+<li>Plugin  //MySQL</li>
+<li>Key  //Resource Key</li>
+<li>PolicyName //&lt;&lt;OnDemand-Policy Name&gt;&gt;</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">POST API Body</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>   <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;mysql_ondemand&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Expected Response</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Response</span> <span class="n">code</span><span class="p">:</span> <span class="mi">202</span> <span class="o">&gt;</span> <span class="n">Resource</span> <span class="n">Protected</span> <span class="n">Sucessfully</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Sample CURL request</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> \
+  <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="mf">10.192</span><span class="o">.</span><span class="mf">39.22</span><span class="p">:</span><span class="mi">8146</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="mf">3.0</span><span class="o">/</span><span class="n">plugins</span><span class="o">/</span><span class="n">MySQL</span><span class="o">/</span><span class="n">resources</span><span class="o">/</span><span class="mi">1</span><span class="o">/</span><span class="n">backup</span> \
+  <span class="o">-</span><span class="n">H</span> <span class="s1">&#39;content-type: application/json&#39;</span> \
+  <span class="o">-</span><span class="n">H</span> <span class="s1">&#39;token: AwpBZ9pM2LoI2YLtxODW3zULAS99aWghq+rw5THb8TQjw5ef/NLjMPk2JZdxy5A7Q0qZ0UDgQXnPPj51K3NJVce5eIpm8lnrfgCBnid6zla0Rvc0a/iZscg76lZQuBvt63GrVNlRguD+Hr6cMDn5bRNtkCZEyH113Gf0dfZ9MjxsMQqWCDI38hqjNai+cyf2MfkHBoTPZTxvBliPy+MKlg==&#39;</span> \
+  <span class="o">-</span><span class="n">d</span> <span class="s1">&#39;{ &quot;name&quot;: &quot;mysql_ondemand&quot; }&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Response Headers</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;pragma&quot;</span><span class="p">:</span> <span class="s2">&quot;no-cache&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;strict-transport-security&quot;</span><span class="p">:</span> <span class="s2">&quot;max-age=31536000&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;server&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft-IIS/8.5&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;x-aspnet-version&quot;</span><span class="p">:</span> <span class="s2">&quot;4.0.30319&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;joburi&quot;</span><span class="p">:</span> <span class="s2">&quot;https://&lt;&lt;SC-Server-IP&gt;&gt;/api/jobs/730&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;x-powered-by&quot;</span><span class="p">:</span> <span class="s2">&quot;ASP.NET&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;x-frame-options&quot;</span><span class="p">:</span> <span class="s2">&quot;SAMEORIGIN&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/plain; charset=utf-8&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;access-control-allow-origin&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;cache-control&quot;</span><span class="p">:</span> <span class="s2">&quot;no-cache&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;access-control-allow-credentials&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;content-length&quot;</span><span class="p">:</span> <span class="s2">&quot;16&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="s2">&quot;Tue, 01 Aug 2017 12:05:55 GMT&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;expires&quot;</span><span class="p">:</span> <span class="s2">&quot;-1&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>From the response header “”joburi”: “&lt;&lt;SC-Server-IP&gt;&gt;/api/jobs/&lt;&lt;730&gt;&gt;”</p>
+<p class="last">e.g: 730 will be the OnDemand Backup job id for this backup job</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="get-the-mysql-database-backup-details">
+<h1>Get the MySQL database backup details<a class="headerlink" href="#get-the-mysql-database-backup-details" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>https://&lt;&lt;SC-Server-IP&gt;&gt;/api/3.0/backups?JobId=&lt;&lt;BACKUP-JOB-ID&gt;&gt;
+</pre></div>
+</div>
+</li>
+<li><dl class="first docutils">
+<dt>Mandatory API Parameters</dt>
+<dd><ol class="first last arabic simple">
+<li>Token</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">Expected Response Code</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Response</span> <span class="n">code</span><span class="p">:</span> <span class="mi">202</span> <span class="o">&gt;</span> <span class="n">Request</span> <span class="n">Successful</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Expected Response</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;Job&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;StartTime&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;EndTime&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;IsCancellable&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsRestartable&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsCompleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsVisible&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+        <span class="s2">&quot;IsScheduled&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;PercentageCompleted&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Owner&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Error&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Priority&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Tasks&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;ParentJobID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;EventId&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;JobTypeId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;ApisJobKey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;ObjectId&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;PluginCode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;PluginName&quot;</span><span class="p">:</span> <span class="n">null</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;Backups&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;BackupName&quot;</span><span class="p">:</span> <span class="s2">&quot;app-linux2_lab_com_MySQL_apprenda_db_app-linux2_08-01-2017_07.09.11.4866&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;BackupId&quot;</span><span class="p">:</span> <span class="s2">&quot;611&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;BackupType&quot;</span><span class="p">:</span> <span class="s2">&quot;SCC_BACKUP&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;BackupTime&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-08-01T07:07:38.079&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Host&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;BackupComponents&quot;</span><span class="p">:</span> <span class="p">[],</span>
+          <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;JobId&quot;</span><span class="p">:</span> <span class="mi">748</span><span class="p">,</span>
+          <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;MetaObject&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                  <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                  <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;HasMultipleResources&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Values&quot;</span><span class="p">:</span> <span class="n">null</span>
+                <span class="p">}</span>
+          <span class="p">],</span>
+          <span class="s2">&quot;Deleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+          <span class="s2">&quot;ProtectionGroupName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;Auth&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;RunAsName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;AuthMode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;Passpharse&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;OwnerId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;HostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;InstanceName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;CheckforAdministratorPrivilage&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                <span class="s2">&quot;TargetURL&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;IsSudoEnabled&quot;</span><span class="p">:</span> <span class="n">false</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;PolicyName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;IsClone&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+          <span class="s2">&quot;Startime&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-08-01T07:09:42.2401161-07:00&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;CloneLevel&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;Endtime&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-08-01T07:09:42.2401161-07:00&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Hosts&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;VerifyResultSummary&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;StorageName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;MountedPath&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;IsMounted&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;NsmObjectID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;MountedHostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;CatalogBackupStatus&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;ScheduleType&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;Result&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;_message&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_errorCode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;ErrorRecords&quot;</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;TotalCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;DisplayCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;Context&quot;</span><span class="p">:</span> <span class="n">null</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>From the response parse the backup name
+e.g : “BackupName”: “app-linux2_lab_com_MySQL_apprenda_db_app-linux2_08-01-2017_07.09.11.4866”.</p>
+<p>This backup name is used as unique identifer to create a clone.</p>
+<ol class="last arabic simple" start="2">
+<li>To find the latest backup name, Parse all the backups and sort them using the unique timestamps.</li>
+</ol>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="clone-the-mysql-database-from-the-backup">
+<h1>Clone the MySQL Database from the backup<a class="headerlink" href="#clone-the-mysql-database-from-the-backup" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//&lt;&lt;</span><span class="n">SC</span><span class="o">-</span><span class="n">Server</span><span class="o">-</span><span class="n">IP</span><span class="o">&gt;&gt;/</span><span class="n">api</span><span class="o">/</span><span class="mf">3.0</span><span class="o">/</span><span class="n">plugins</span><span class="o">/&lt;&lt;</span><span class="n">MySQL</span><span class="o">&gt;&gt;/</span><span class="n">resources</span><span class="o">/&lt;&lt;</span><span class="n">JOB</span><span class="o">-</span><span class="n">ID</span><span class="o">&gt;&gt;/</span><span class="n">clone</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Mandatory input for the API</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>        <span class="mi">1</span><span class="p">)</span> <span class="n">Token</span>
+
+        <span class="mi">2</span><span class="p">)</span> <span class="n">Plugin</span>
+
+        <span class="mi">3</span><span class="p">)</span> <span class="n">Key</span>
+
+        <span class="mi">4</span><span class="p">)</span> <span class="n">A</span> <span class="n">MySQL</span> <span class="n">startup</span> <span class="n">script</span> <span class="n">on</span> <span class="n">host</span> <span class="p">(</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">start</span><span class="o">-</span><span class="n">msql</span><span class="o">.</span><span class="n">sh</span><span class="p">)</span> <span class="p">::</span>
+
+                        <span class="o">&gt;</span><span class="n">cat</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">start</span><span class="o">-</span><span class="n">mysql</span><span class="o">.</span><span class="n">sh</span>
+
+                                <span class="n">service</span> <span class="n">mysqld</span> <span class="n">stop</span><span class="p">;</span>
+                                <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">mysqld</span> <span class="o">--</span><span class="n">pid</span><span class="o">-</span><span class="n">file</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">mysqld</span><span class="o">/</span><span class="n">mysqld2</span><span class="o">.</span><span class="n">pid</span> <span class="o">--</span><span class="n">socket</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql2</span><span class="o">/</span><span class="n">mysql</span><span class="o">.</span><span class="n">sock</span> <span class="o">--</span><span class="n">user</span><span class="o">=</span><span class="n">mysql</span> <span class="o">--</span><span class="n">datadir</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql2</span> <span class="o">&amp;</span>
+
+
+
+
+<span class="mi">5</span><span class="p">)</span> <span class="n">CreateCloneRequest</span>  <span class="p">::</span>
+
+                <span class="p">{</span>
+                <span class="s2">&quot;CloneConfiguration&quot;</span><span class="p">:</span>
+                        <span class="p">{</span>
+                        <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SmCloneConfiguration, SMCoreContracts&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Suffix&quot;</span><span class="p">:</span> <span class="s2">&quot;_clone1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;CloneConfigurationApplication&quot;</span><span class="p">:</span>
+                                <span class="p">{</span>
+                                        <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SmSCCloneConfiguration, SMCoreContracts&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;MountCmd&quot;</span><span class="p">:[</span><span class="s2">&quot;mount 10.192.39.72:%mysql_vol_Clone /var/lib/mysql2&quot;</span><span class="p">],</span>
+                                        <span class="s2">&quot;PostCloneCreateCmd&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;/var/lib/start-mysql.sh&quot;</span><span class="p">]</span>
+                                        <span class="s2">&quot;Host&quot;</span><span class="p">:</span> <span class="s2">&quot;app-linux1.lab.com&quot;</span>
+                                        <span class="p">}</span>
+                                <span class="p">},</span>
+                        <span class="s2">&quot;Backups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                                <span class="p">{</span>
+                                <span class="s2">&quot;PrimaryBackup&quot;</span><span class="p">:</span>
+                                <span class="p">{</span>
+                                        <span class="s2">&quot;BackupName&quot;</span><span class="p">:</span> <span class="s2">&quot;app-linux2_lab_com_MySQL_apprenda_db_app-linux2_08-01-2017_07.09.11.4866&quot;</span>
+                                <span class="p">}</span>
+                        <span class="p">}</span>
+                                <span class="p">],</span>
+                <span class="p">}</span>
+
+
+
+<span class="o">..</span> <span class="n">note</span> <span class="p">::</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">start</span><span class="o">-</span><span class="n">msql</span><span class="o">.</span><span class="n">sh</span> <span class="n">script</span> <span class="n">should</span> <span class="n">be</span> <span class="n">present</span> <span class="n">on</span> <span class="n">linux</span> <span class="n">hosts</span><span class="o">.</span>
+
+                         <span class="p">::</span>
+
+                                <span class="o">&gt;</span><span class="n">cat</span> <span class="n">start</span><span class="o">-</span><span class="n">mysql</span><span class="o">.</span><span class="n">sh</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Expected Response Code if Clone Creation is successful</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Response</span> <span class="n">code</span><span class="p">:</span> <span class="mi">200</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="get-all-the-backup-details-for-db-from-db-name-resource-name">
+<h1>Get All the Backup Details for DB from DB name (resource name)<a class="headerlink" href="#get-all-the-backup-details-for-db-from-db-name-resource-name" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>https://&lt;&lt;SC-Server-IP&gt;&gt;/api/3.0/backups?Resource=&lt;&lt;DBName&gt;&gt;
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For a clone it would be
+<a class="reference external" href="https://10.192.39.22:8146/api/3.0/backups">https://10.192.39.22:8146/api/3.0/backups</a>?Resource=&lt;&lt;DBName_clone1&gt;&gt;</p>
+</div>
+<ul>
+<li><p class="first">Mandatory input for the API</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="p">)</span> <span class="n">Token</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Expected Response Code</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">200</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Expected Response</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+          <span class="s2">&quot;Job&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;StartTime&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;EndTime&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;IsCancellable&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                <span class="s2">&quot;IsRestartable&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                <span class="s2">&quot;IsCompleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                <span class="s2">&quot;IsVisible&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+                <span class="s2">&quot;IsScheduled&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                <span class="s2">&quot;PercentageCompleted&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;Status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;Owner&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;Error&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;Priority&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;Tasks&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s2">&quot;ParentJobID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;EventId&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;JobTypeId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;ApisJobKey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;ObjectId&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;PluginCode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;PluginName&quot;</span><span class="p">:</span> <span class="n">null</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;Backups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                  <span class="s2">&quot;BackupName&quot;</span><span class="p">:</span> <span class="s2">&quot;app-linux2_lab_com_MySQL_akshay_app-linux2_10-30-2017_08.11.37.3755&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;BackupId&quot;</span><span class="p">:</span> <span class="s2">&quot;59&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;BackupType&quot;</span><span class="p">:</span> <span class="s2">&quot;SCC_BACKUP&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                  <span class="s2">&quot;BackupTime&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-10-30T08:08:42.873&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Host&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                  <span class="s2">&quot;BackupComponents&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                  <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;JobId&quot;</span><span class="p">:</span> <span class="mi">623</span><span class="p">,</span>
+                  <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;MetaObject&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="p">{</span>
+                          <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                          <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;HasMultipleResources&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;Values&quot;</span><span class="p">:</span> <span class="n">null</span>
+                        <span class="p">}</span>
+                  <span class="p">],</span>
+                  <span class="s2">&quot;Deleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                  <span class="s2">&quot;ProtectionGroupName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                  <span class="s2">&quot;Auth&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;RunAsName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;AuthMode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;Passpharse&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;OwnerId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;HostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;InstanceName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;CheckforAdministratorPrivilage&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                        <span class="s2">&quot;TargetURL&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;IsSudoEnabled&quot;</span><span class="p">:</span> <span class="n">false</span>
+                  <span class="p">},</span>
+                  <span class="s2">&quot;PolicyName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                  <span class="s2">&quot;IsClone&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                  <span class="s2">&quot;Startime&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-10-31T01:06:23.19517-07:00&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;CloneLevel&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                  <span class="s2">&quot;Endtime&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-10-31T01:06:23.19517-07:00&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Hosts&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                  <span class="s2">&quot;VerifyResultSummary&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                  <span class="s2">&quot;StorageName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                  <span class="s2">&quot;MountedPath&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                  <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                  <span class="s2">&quot;IsMounted&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                  <span class="s2">&quot;NsmObjectID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                  <span class="s2">&quot;MountedHostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                  <span class="s2">&quot;CatalogBackupStatus&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                  <span class="s2">&quot;ScheduleType&quot;</span><span class="p">:</span> <span class="mi">0</span>
+                <span class="p">}</span>
+          <span class="p">],</span>
+          <span class="s2">&quot;Result&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;_message&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;_errorCode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;ErrorRecords&quot;</span><span class="p">:</span> <span class="p">[]</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;TotalCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;DisplayCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;Context&quot;</span><span class="p">:</span> <span class="n">null</span>
+        <span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The latest backup will be found at the bottom in the JSON list.</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="copy-the-resource-settings-to-clone-via-put-request">
+<h1>Copy the Resource settings to clone via PUT request<a class="headerlink" href="#copy-the-resource-settings-to-clone-via-put-request" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>                https://&lt;&lt;SC-Server-IP&gt;&gt;/api/3.0/plugins/&lt;&lt;MySQL&gt;&gt;/resources/&lt;&lt;Clone Resource Key&gt;&gt;
+
+
+
+
+* Mandatory input for the API ::
+
+                1) Token
+
+                2) Plugin
+
+                3) Key  //Clone-Resource-Key
+
+                4)
+
+                pluginresource ::
+
+                                                                {
+                                                                  &quot;RunAsNames&quot;: &quot;app-linux1&quot;,
+                                                                  &quot;FootPrint&quot;: [
+                                                                        {
+                                                                          &quot;SVMName&quot;: &quot;10.192.39.71&quot;,
+                                                                          &quot;VolAndLunsMapping&quot;: [
+                                                                                {
+                                                                                  &quot;VolumeName&quot;: {
+                                                                                        &quot;Name&quot;: &quot;&lt;&lt;clone_volume_name&gt;&gt;&quot;
+                                                                                  }
+                                                                                }
+                                                                          ]
+                                                                        }
+                                                                  ],
+                                                                  &quot;PluginParams&quot;: {
+                                                                        &quot;Data&quot;: [
+                                                                          {
+                                                                                &quot;Key&quot;: &quot;PORT&quot;,
+                                                                                &quot;Value&quot;: &quot;3306&quot;
+                                                                          },
+                                                                 {
+                                                                                &quot;Key&quot;: &quot;MASTER_SLAVE&quot;,
+                                                                                &quot;Value&quot;: &quot;N&quot;
+                                                                          },
+                                                                 {
+                                                                                &quot;Key&quot;: &quot;HOST&quot;,
+                                                                                &quot;Value&quot;: &quot;&lt;&lt;clone-host-name&gt;&gt;&quot;
+                                                                          },
+
+                                                                           {
+                                                                                &quot;Key&quot;: &quot;CLONE_UID&quot;,
+                                                                                &quot;Value&quot;: &quot;&lt;&lt;OurUniqueID for Clone&gt;&gt;&quot;
+                                                                          }
+                                                                        ]
+                                                                  }
+
+
+
+* Expected Response Code ::
+
+                200
+
+
+.. note :: All these properties, e.g: (HOST, PORT, VolumeName,RunAsName etc are available in the above GET backup details API (https://&lt;&lt;SC-Server-IP&gt;&gt;/api/3.0/backups?Resource=&lt;&lt;DBName&gt;&gt;) call.
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="get-the-key-for-the-clone-mysql-database">
+<h1>Get the Key for the Clone MySQL Database<a class="headerlink" href="#get-the-key-for-the-clone-mysql-database" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><p>This process is exactly same for getting the key for orignal db key.</p>
+<ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s1">&#39;https://&lt;&lt;SC-Server-IP&gt;&gt;/api/3.0/hosts/&lt;&lt;Linux-Hostname&gt;&gt;/plugins/MySQL/resources?ResourceType=Database&amp;ResourceName=&lt;&lt;Clone-Resource-Name&gt;&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Mandatory input for the API</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="p">)</span> <span class="n">Token</span>    <span class="o">//</span>
+<span class="mi">2</span><span class="p">)</span> <span class="n">Name</span>    <span class="o">//</span><span class="n">Hostname</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Linux</span> <span class="n">Node</span>
+<span class="mi">3</span><span class="p">)</span> <span class="n">Instancetype</span> <span class="o">//</span><span class="n">Database</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Expected Response Code if Clone Creation is successful</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Response</span> <span class="n">code</span><span class="p">:</span> <span class="mi">200</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Parse the “key” field from the above respose. This key will be used to perform any operations on clone.</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="protect-the-clone">
+<h1>Protect the Clone<a class="headerlink" href="#protect-the-clone" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><p>This process is exactly same for getting the key for orignal db key.</p>
+<ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//&lt;&lt;</span><span class="n">SnapCenter</span><span class="o">-</span><span class="n">Server</span><span class="o">-</span><span class="n">IP</span><span class="o">&gt;&gt;/</span><span class="n">api</span><span class="o">/</span><span class="mf">3.0</span><span class="o">/</span><span class="n">plugins</span><span class="o">/&lt;&lt;</span><span class="n">MySQL</span><span class="o">&gt;&gt;/</span><span class="n">resources</span><span class="o">/&lt;&lt;</span><span class="n">Resource</span><span class="o">-</span><span class="n">Group</span><span class="o">-</span><span class="n">Key</span><span class="o">&gt;&gt;/</span><span class="n">protect</span>
+</pre></div>
+</div>
+</li>
+<li><dl class="first docutils">
+<dt>Mandatory API Parameters</dt>
+<dd><p class="first">1)Token
+2) Plugin
+3) Key  //Resource Key
+4)SmCreateProtectionGroupRequest</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+        <span class="s2">&quot;ProtectionGroup&quot;</span><span class="p">:</span>
+                <span class="p">{</span>
+                        <span class="s2">&quot;Configuration&quot;</span><span class="p">:</span>
+                                <span class="p">{</span>
+                                        <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SmBackupConfiguration, SMCoreContracts&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;rg_internal&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;PluginConfiguration&quot;</span><span class="p">:</span>
+                                        <span class="p">{</span>
+                                                <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SmSCBackupConfiguration, SMCoreContracts&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;FileSystemConsistentSnapshot&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                                        <span class="p">},</span>
+                                        <span class="s2">&quot;ConfigurationType&quot;</span><span class="p">:</span> <span class="s2">&quot;ProtectionGroup&quot;</span>
+                                <span class="p">},</span>
+                        <span class="s2">&quot;Policies&quot;</span><span class="p">:</span> <span class="p">[</span>
+                                                        <span class="p">{</span>
+                                                        <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;&lt;OnDemand-Policy Name&gt;&gt;&quot;</span><span class="p">,</span>
+                                                        <span class="p">}</span>
+                                                <span class="p">],</span>
+                        <span class="s2">&quot;ProtectionGroupType&quot;</span><span class="p">:</span> <span class="s2">&quot;Backup&quot;</span>
+                <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="backup-the-clone">
+<h1>Backup the clone<a class="headerlink" href="#backup-the-clone" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//&lt;&lt;</span><span class="n">SnapCenter</span><span class="o">-</span><span class="n">Server</span><span class="o">-</span><span class="n">IP</span><span class="o">&gt;&gt;/</span><span class="n">api</span><span class="o">/</span><span class="mf">3.0</span><span class="o">/</span><span class="n">plugins</span><span class="o">/&lt;&lt;</span><span class="n">MySQL</span><span class="o">&gt;&gt;/</span><span class="n">resources</span><span class="o">/&lt;&lt;</span><span class="n">Resource</span><span class="o">-</span><span class="n">Group</span><span class="o">-</span><span class="n">Key</span><span class="o">&gt;&gt;/</span><span class="n">backup</span>
+</pre></div>
+</div>
+</li>
+<li><dl class="first docutils">
+<dt>Mandatory API Parameters</dt>
+<dd><ol class="first last arabic simple">
+<li>Token</li>
+<li>Plugin  //MySQL</li>
+<li>Key  //Resource Key</li>
+<li>PolicyName //&lt;&lt;OnDemand-Policy Name&gt;&gt;</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">POST API Body</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>   <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;mysql_ondemand&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Expected Response</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Response</span> <span class="n">code</span><span class="p">:</span> <span class="mi">202</span> <span class="o">&gt;</span> <span class="n">Resource</span> <span class="n">Protected</span> <span class="n">Sucessfully</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Sample CURL request</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> \
+  <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="mf">10.192</span><span class="o">.</span><span class="mf">39.22</span><span class="p">:</span><span class="mi">8146</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="mf">3.0</span><span class="o">/</span><span class="n">plugins</span><span class="o">/</span><span class="n">MySQL</span><span class="o">/</span><span class="n">resources</span><span class="o">/</span><span class="mi">1</span><span class="o">/</span><span class="n">backup</span> \
+  <span class="o">-</span><span class="n">H</span> <span class="s1">&#39;content-type: application/json&#39;</span> \
+  <span class="o">-</span><span class="n">H</span> <span class="s1">&#39;token: AwpBZ9pM2LoI2YLtxODW3zULAS99aWghq+rw5THb8TQjw5ef/NLjMPk2JZdxy5A7Q0qZ0UDgQXnPPj51K3NJVce5eIpm8lnrfgCBnid6zla0Rvc0a/iZscg76lZQuBvt63GrVNlRguD+Hr6cMDn5bRNtkCZEyH113Gf0dfZ9MjxsMQqWCDI38hqjNai+cyf2MfkHBoTPZTxvBliPy+MKlg==&#39;</span> \
+  <span class="o">-</span><span class="n">d</span> <span class="s1">&#39;{ &quot;name&quot;: &quot;mysql_ondemand&quot; }&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Response Headers</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;pragma&quot;</span><span class="p">:</span> <span class="s2">&quot;no-cache&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;strict-transport-security&quot;</span><span class="p">:</span> <span class="s2">&quot;max-age=31536000&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;server&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft-IIS/8.5&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;x-aspnet-version&quot;</span><span class="p">:</span> <span class="s2">&quot;4.0.30319&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;joburi&quot;</span><span class="p">:</span> <span class="s2">&quot;https://&lt;&lt;SC-Server-IP&gt;&gt;/api/jobs/730&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;x-powered-by&quot;</span><span class="p">:</span> <span class="s2">&quot;ASP.NET&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;x-frame-options&quot;</span><span class="p">:</span> <span class="s2">&quot;SAMEORIGIN&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/plain; charset=utf-8&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;access-control-allow-origin&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;cache-control&quot;</span><span class="p">:</span> <span class="s2">&quot;no-cache&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;access-control-allow-credentials&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;content-length&quot;</span><span class="p">:</span> <span class="s2">&quot;16&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="s2">&quot;Tue, 01 Aug 2017 12:05:55 GMT&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;expires&quot;</span><span class="p">:</span> <span class="s2">&quot;-1&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>From the response header “”joburi”: “&lt;&lt;SC-Server-IP&gt;&gt;/api/jobs/&lt;&lt;730&gt;&gt;”</p>
+<p class="last">e.g: 730 will be the OnDemand Backup job id for this backup job</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="get-the-clone-database-backup-details">
+<h1>Get the Clone database backup details<a class="headerlink" href="#get-the-clone-database-backup-details" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ul>
+<li><p class="first">API Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>https://&lt;&lt;SC-Server-IP&gt;&gt;/api/3.0/backups/?JobId=&lt;&lt;BACKUP-JOB-ID&gt;&gt;
+</pre></div>
+</div>
+</li>
+<li><dl class="first docutils">
+<dt>Mandatory API Parameters</dt>
+<dd><ol class="first last arabic simple">
+<li>Token</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">Expected Response Code</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Response</span> <span class="n">code</span><span class="p">:</span> <span class="mi">202</span> <span class="o">&gt;</span> <span class="n">Request</span> <span class="n">Successful</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Expected Response</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;Job&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;StartTime&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;EndTime&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;IsCancellable&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsRestartable&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsCompleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;IsVisible&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+        <span class="s2">&quot;IsScheduled&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;PercentageCompleted&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Owner&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Error&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;Priority&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;Tasks&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;ParentJobID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;EventId&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;JobTypeId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;ApisJobKey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+        <span class="s2">&quot;ObjectId&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;PluginCode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;PluginName&quot;</span><span class="p">:</span> <span class="n">null</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;Backups&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;BackupName&quot;</span><span class="p">:</span> <span class="s2">&quot;app-linux2_lab_com_MySQL_apprenda_db_app-linux2_08-01-2017_07.09.11.4866&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;BackupId&quot;</span><span class="p">:</span> <span class="s2">&quot;611&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;BackupType&quot;</span><span class="p">:</span> <span class="s2">&quot;SCC_BACKUP&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;BackupTime&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-08-01T07:07:38.079&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Host&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;BackupComponents&quot;</span><span class="p">:</span> <span class="p">[],</span>
+          <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;JobId&quot;</span><span class="p">:</span> <span class="mi">748</span><span class="p">,</span>
+          <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;MetaObject&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                  <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                  <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;HasMultipleResources&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Values&quot;</span><span class="p">:</span> <span class="n">null</span>
+                <span class="p">}</span>
+          <span class="p">],</span>
+          <span class="s2">&quot;Deleted&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+          <span class="s2">&quot;ProtectionGroupName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;Auth&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;RunAsName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;AuthMode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;UserName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;Passpharse&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;OwnerId&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;HostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;InstanceName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;CheckforAdministratorPrivilage&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                <span class="s2">&quot;TargetURL&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                <span class="s2">&quot;IsSudoEnabled&quot;</span><span class="p">:</span> <span class="n">false</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;PolicyName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;IsClone&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+          <span class="s2">&quot;Startime&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-08-01T07:09:42.2401161-07:00&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;CloneLevel&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;Endtime&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-08-01T07:09:42.2401161-07:00&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Hosts&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;VerifyResultSummary&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;StorageName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;MountedPath&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;IsMounted&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;NsmObjectID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;MountedHostName&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s2">&quot;CatalogBackupStatus&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s2">&quot;ScheduleType&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;Result&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;_message&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_errorCode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;ErrorRecords&quot;</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;TotalCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;DisplayCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;Context&quot;</span><span class="p">:</span> <span class="n">null</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>From the response parse the backup name
+e.g : “BackupName”: “app-linux2_lab_com_MySQL_apprenda_db_app-linux2_08-01-2017_07.09.11.4866”.</p>
+<p>This backup name is used as unique identifer to create a clone.</p>
+<ol class="last arabic simple" start="2">
+<li>To find the latest backup name, Parse all the backups and sort them using the unique timestamps.</li>
+</ol>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="restore-the-clone-database">
+<h1>Restore the Clone database<a class="headerlink" href="#restore-the-clone-database" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><ul>
+<li><p class="first">API POST Request URL</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//&lt;&lt;</span><span class="n">SC</span><span class="o">-</span><span class="n">Server</span><span class="o">-</span><span class="n">IP</span><span class="o">&gt;&gt;/</span><span class="n">api</span><span class="o">/</span><span class="mf">3.0</span><span class="o">/</span><span class="n">plugins</span><span class="o">/&lt;&lt;</span><span class="n">MySQL</span><span class="o">&gt;&gt;/</span><span class="n">resources</span><span class="o">/&lt;&lt;</span><span class="n">Clone</span><span class="o">-</span><span class="n">Resource</span><span class="o">-</span><span class="n">Key</span><span class="o">&gt;&gt;/</span><span class="n">restore</span>
+</pre></div>
+</div>
+</li>
+<li><dl class="first docutils">
+<dt>Mandatory API Parameters</dt>
+<dd><ol class="first last arabic simple">
+<li>Token</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">Mandatory API Body</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;BackupInfo&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;PrimaryBackup&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;BackupName&quot;</span><span class="p">:</span> <span class="o">&lt;&lt;</span><span class="n">Clone</span><span class="o">-</span><span class="n">BackupName</span> <span class="n">Here</span><span class="o">&gt;&gt;</span>
+        <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;RestoreLastBackup&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;Configuration&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;SMCoreContracts.SmSCRestoreConfiguration, SMCoreContracts&quot;</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;PluginCode&quot;</span><span class="p">:</span> <span class="s2">&quot;SCC&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Expected Response Code</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Response</span> <span class="n">code</span><span class="p">:</span> <span class="mi">202</span> <span class="o">&gt;</span> <span class="n">Request</span> <span class="n">Successful</span>
+
+
+
+
+
+
+<span class="mi">1</span><span class="p">)</span> <span class="n">Get</span> <span class="n">All</span> <span class="n">Resources</span>  <span class="p">(</span><span class="kn">from</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Akshay Patil.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
