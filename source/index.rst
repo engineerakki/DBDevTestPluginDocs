@@ -13,9 +13,3 @@ Welcome to DBaaS using Apprenda and SnapCenter's documentation!
 
 
 
-Indices and tables
-==================
-
-* :ref:`pre`
-* :ref:`modindex`
-* :ref:`search`
